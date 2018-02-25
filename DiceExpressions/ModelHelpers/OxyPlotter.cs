@@ -83,7 +83,8 @@ namespace DiceExpressions.Model
                 lineseries.MarkerFill = OxyColors.Transparent;
                 lineseries.MarkerType = MarkerType.Cross;
                 lineseries.MarkerStroke = OxyColors.Red;
-            } else {
+            } else
+            {
                 lineseries.Color = OxyColors.Black;
             }
             foreach (var key in inputList)

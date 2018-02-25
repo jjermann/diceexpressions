@@ -6,7 +6,7 @@
         <StackPanel Orientation = "Vertical">
             <StackPanel Orientation = "Horizontal">
                 <TextBlock Text="Dice expression: " />
-                <TextBox Name="diceExpression" Text="{Binding DiceExpression}" />
+                <TextBox Name="diceExpression" Text="{Binding DiceExpression, Mode=TwoWay}" />
             </StackPanel>
             <TextBlock Name="result" Text="{Binding Result}" />
             <!-- <oxy:PlotView Model="{Binding Plot}" /> -->

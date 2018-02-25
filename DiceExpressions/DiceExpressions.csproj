@@ -18,5 +18,9 @@
     <PackageReference Include="Avalonia" Version="*"/>
     <PackageReference Include="Avalonia.Desktop" Version="*"/>
     <PackageReference Include="Avalonia.ReactiveUI" Version="*"/>
+    <PackageReference Include="Antlr4.Runtime" Version="4.6.5-beta001"/>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Antlr4DensityParser\Antlr4DensityParser.csproj"/>
   </ItemGroup>
 </Project>

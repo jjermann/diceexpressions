@@ -8,9 +8,7 @@ namespace DiceExpressions.Model
 {
     public class UniformDensity<T> : Density<T>
     {
-        protected override string Name => "UniformDensity";
-
-        public UniformDensity(params T[] keys) : base(GetUniformDensityDict(keys)) { }
+        public UniformDensity(params T[] keys) : base(GetUniformDensityDict(keys), "UniformDensity") { }
 
         protected static IDictionary<T, PType> GetUniformDensityDict(params T[] keys)
         {
@@ -28,29 +26,36 @@ namespace DiceExpressions.Model
 
     public class Constant<T> : UniformDensity<T>
     {
-        protected override string Name => $"Constant({Key})";
         public T Key => Keys.Single();
 
-        public Constant(T v) : base(v) { }
+        public Constant(T v) : base(v)
+        {
+            Name = $"{v}";
+        }
     }
 
     public class Zero<T> : Constant<T>
     {
-        protected override string Name => "Zero";
-        public Zero() : base(GenericMath<T>.Zero) { }
+        public Zero() : base(GenericMath<T>.Zero)
+         { 
+             Name = $"{GenericMath<T>.Zero}";
+         }
     }
 
     public class One<T> : Constant<T>
     {
-        protected override string Name => "One";
-        public One() : base((T)(dynamic)1) { }
+        public One() : base((T)(dynamic)1)
+        { 
+            Name = $"{(T)(dynamic)1}";
+        }
     }
 
     public class Die : UniformDensity<int>
     {
-        protected override string Name => $"d{Sides}";
         public int Sides { get; }
-        public Die(int n) : base(Enumerable.Range(1, n).ToArray()) {
+        public Die(int n) : base(Enumerable.Range(1, n).ToArray())
+        {
+            Name = $"d{n}";
             Sides = n;
         }
     }

@@ -16,7 +16,8 @@ namespace DiceExpressions.Model
             var sum = GenericMath<T>.Zero;
             foreach (var value in source)
             {
-                if (value != null) {
+                if (value != null)
+                {
                     sum = GenericMath<T>.Add(sum, value);
                 }
             }
@@ -33,7 +34,8 @@ namespace DiceExpressions.Model
             var sum = GenericMath<T>.Zero;
             foreach (var value in source)
             {
-                if (value != null) {
+                if (value != null)
+                {
                     sum = GenericMath<T>.Add(sum, value);
                     count++;
                 }
@@ -63,7 +65,8 @@ namespace DiceExpressions.Model
             var max = sourceList.FirstOrDefault(s => !ReferenceEquals(s, null));
             foreach (var value in sourceList)
             {
-                if (value != null && GenericMath<T>.GreaterThan(value, max)) {
+                if (value != null && GenericMath<T>.GreaterThan(value, max))
+                {
                     max = value;
                 }
             }
@@ -80,7 +83,8 @@ namespace DiceExpressions.Model
             var min = sourceList.FirstOrDefault(s => !ReferenceEquals(s, null));
             foreach (var value in sourceList)
             {
-                if (value != null && GenericMath<T>.LessThan(value, min)) {
+                if (value != null && GenericMath<T>.LessThan(value, min))
+                {
                     min = value;
                 }
             }

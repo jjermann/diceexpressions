@@ -70,7 +70,8 @@ namespace DiceExpressions.Model
                 mainContent = mainContent.Substring(0, correctedZeroPosition) 
                     + string.Concat(Enumerable.Repeat(FillChar, relPosition))
                     + mainContent.Substring(correctedZeroPosition + relPosition);
-            } else {
+            } else
+            {
                 mainContent = mainContent.Substring(0, correctedZeroPosition + relPosition)
                     + string.Concat(Enumerable.Repeat(FillChar, -relPosition))
                     + mainContent.Substring(correctedZeroPosition);
@@ -107,10 +108,12 @@ namespace DiceExpressions.Model
                 ? "{0:>12}\t{1:>12.2%}\t{2}"
                 : "{0:>12}\t{1:>12}\t{2}";
             
-            if (centered) {
+            if (centered)
+            {
                 var result = string.Join(Environment.NewLine, inputs.Select(k => GetPlotLine(f(k), setMinP, setMaxP, plotWidth)));
                 return result;
-            } else {
+            } else
+            {
                 var result = string.Join(Environment.NewLine, inputs.Select(k => GetCenteredPlotLine(f(k), setMinP, setMaxP, plotWidth)));
                 return result;
             }

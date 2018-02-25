@@ -15,12 +15,23 @@ namespace DiceExpressions.Model
     public class Density<T> : IEquatable<Density<T>>
     {
         private IDictionary<T, PType> _densityDict;
-        public Density(IDictionary<T, PType> dict) 
+        public Density(IDictionary<T, PType> dict, string name = null) 
         {
             _densityDict = dict;
+            Name = name ?? "Density";
         }
 
-        protected virtual string Name => "Density";
+        public string Name { get; set; }
+        public string TrimmedName {
+            get {
+                var trimmedName = Name;
+                while(trimmedName.StartsWith("(") && trimmedName.EndsWith(")"))
+                {
+                    trimmedName = trimmedName.Substring(1, Math.Max(1, trimmedName.Length-2));
+                }
+                return trimmedName;
+            }
+        } 
         public PType this[T key] => _densityDict[key];
         public IList<T> Keys => _densityDict.Keys.OrderBy(k => k).ToList();
         public IList<PType> Values => Keys.Select(k => _densityDict[k]).ToList();
@@ -79,10 +90,10 @@ namespace DiceExpressions.Model
         public static implicit operator Density<PType>(Density<T> d)
         {
             var newDict = d._densityDict.ToDictionary(p => GenericMath.Convert<T, PType>(p.Key), p => p.Value);
-            return new Density<PType>(newDict);
+            return new Density<PType>(newDict, d.Name);
         }
 
-        public Density<U> Op<U>(Func<T, U> op)
+        public Density<U> Op<U>(Func<T, U> op, Func<string, string> opStrFunc = null)
         {
             var resDensity = new Dictionary<U, PType>();
             foreach (var key in Keys)
@@ -94,38 +105,44 @@ namespace DiceExpressions.Model
                 }
                 resDensity[resKey] += this[key];
             }
-            return new Density<U>(resDensity);
+            var name = opStrFunc == null
+                ? "Density"
+                : opStrFunc(Name);
+            return new Density<U>(resDensity, name);
         }
         // public static Density<T> operator +(Density<T> d)
         // {
-        //     return d.Op<T>(a => +(dynamic)a);
+        //     return d.Op<T>(a => +(dynamic)a, s => $"(+{s})");
         // }
         public static Density<T> operator -(Density<T> d)
         {
-            return d.Op<T>(a => GenericMath.Negate(a));
+            return d.Op<T>(a => GenericMath.Negate(a), s => $"(-{s})");
         }
         // public static Density<T> operator !(Density<T> d)
         // {
-        //     return d.Op<T>(a => !(dynamic)a);
+        //     return d.Op<T>(a => !(dynamic)a, s => $"(!{s})");
         // }
         public static Density<T> operator ~(Density<T> d)
         {
-            return d.Op<T>(a => GenericMath.Not(a));
+            return d.Op<T>(a => GenericMath.Not(a), s => $"(~{s})");
         }
         // public static Density<T> operator <<(Density<T> d, int n)
         // {
-        //     return d.Op<T>(a => (dynamic)a << n);
+        //     return d.Op<T>(a => (dynamic)a << n, s => $"({s}<<{n})");
         // }
         // public static Density<T> operator >>(Density<T> d, int n)
         // {
-        //     return d.Op<T>(a => (dynamic)a >> n);
+        //     return d.Op<T>(a => (dynamic)a >> n, s => $"({s}>>{n})");
         // }
         public Density<T> Abs()
         {
-            return Op<T>(a => GenericMathExtension.Abs(a));
+            return Op<T>(a => GenericMathExtension.Abs(a), s => $"|{s}|");
         }
 
-        public static Density<U> BinaryOp<U>(Density<T> d1, Density<T> d2, Func<T, T, U> op)
+        public static Density<U> BinaryOp<U>(
+            Density<T> d1, 
+            Density<T> d2, 
+            Func<T, T, U> op, Func<string,string,string> binOpStrFunc = null)
         {
             var resDensity = new Dictionary<U, PType>();
             foreach (var key1 in d1.Keys)
@@ -140,39 +157,42 @@ namespace DiceExpressions.Model
                     resDensity[resKey] += d1[key1]*d2[key2];
                 }
             }
-            return new Density<U>(resDensity);
+            var name = binOpStrFunc == null
+                ? "Density"
+                : binOpStrFunc(d1.Name, d2.Name);
+            return new Density<U>(resDensity, name);
         }
         public static Density<T> operator +(Density<T> d1, Density<T> d2)
         {
-            return BinaryOp<T>(d1, d2, (a,b) => GenericMath.Add(a,b));
+            return BinaryOp<T>(d1, d2, (a,b) => GenericMath.Add(a,b), (s,t) => $"({s}+{t})");
         }
         public static Density<T> operator -(Density<T> d1, Density<T> d2)
         {
-            return BinaryOp<T>(d1, d2, (a,b) => GenericMath.Subtract(a,b));
+            return BinaryOp<T>(d1, d2, (a,b) => GenericMath.Subtract(a,b), (s,t) => $"({s}-{t})");
         }
         public static Density<T> operator *(Density<T> d1, Density<T> d2)
         {
-            return BinaryOp<T>(d1, d2, (a,b) => GenericMath.Multiply(a,b));
+            return BinaryOp<T>(d1, d2, (a,b) => GenericMath.Multiply(a,b), (s,t) => $"({s}*{t})");
         }
         public static Density<T> operator /(Density<T> d1, Density<T> d2)
         {
-            return BinaryOp<T>(d1, d2, (a,b) => GenericMath.Divide(a,b));
+            return BinaryOp<T>(d1, d2, (a,b) => GenericMath.Divide(a,b), (s,t) => $"({s}/{t})");
         }
         // public static Density<T> operator %(Density<T> d1, Density<T> d2)
         // {
-        //     return BinaryOp<T>(d1, d2, (a,b) => (dynamic)a % (dynamic)b);
+        //     return BinaryOp<T>(d1, d2, (a,b) => (dynamic)a % (dynamic)b, (s,t) => $"({s}%{t})");
         // }
         public static Density<T> operator &(Density<T> d1, Density<T> d2)
         {
-            return BinaryOp<T>(d1, d2, (a,b) => GenericMath.And(a,b));
+            return BinaryOp<T>(d1, d2, (a,b) => GenericMath.And(a,b), (s,t) => $"({s}&{t})");
         }
         public static Density<T> operator |(Density<T> d1, Density<T> d2)
         {
-            return BinaryOp<T>(d1, d2, (a,b) => GenericMath.Or(a,b));
+            return BinaryOp<T>(d1, d2, (a,b) => GenericMath.Or(a,b), (s,t) => $"({s}|{t})");
         }
         public static Density<T> operator ^(Density<T> d1, Density<T> d2)
         {
-            return BinaryOp<T>(d1, d2, (a,b) => GenericMath.Xor(a,b));
+            return BinaryOp<T>(d1, d2, (a,b) => GenericMath.Xor(a,b), (s,t) => $"({s}^{t})");
         }
 
         public PType Prob(Func<T, bool> cond)
@@ -236,6 +256,7 @@ namespace DiceExpressions.Model
             {
                 d += this;
             }
+            d.Name = $"({TrimmedName}).ArithMult({n})";
             return d;
         }
 
@@ -254,7 +275,8 @@ namespace DiceExpressions.Model
                     resDict[mulKey] += mulDensity[mulKey]*d[key];
                 }
             }
-            return new Density<T>(resDict);
+            var newDensity = new Density<T>(resDict, $"{TrimmedName}.ArithMult({d.TrimmedName})");
+            return newDensity;
         }
 
         public PType Expected()
@@ -276,7 +298,7 @@ namespace DiceExpressions.Model
         {
             return GenericMathExtension.Sqrt(Variance());
         }
-        public Density<T> ConditionalDensity(Func<T, bool> cond)
+        public Density<T> ConditionalDensity(Func<T, bool> cond, Func<string,string> condStrFunc = null)
         {
             var resDict = new Dictionary<T, PType>();
             foreach (var key in Keys.Where(cond))
@@ -288,7 +310,12 @@ namespace DiceExpressions.Model
             {
                 resDict[key] /= conditionalProbability;
             }
-            return new Density<T>(resDict);
+            var name = condStrFunc == null
+                ? "Density"
+                : condStrFunc(Name);
+                
+            var newDensity = new Density<T>(resDict, name);
+            return newDensity;
         }
         public PType Cdf(PType x)
         {
@@ -297,7 +324,12 @@ namespace DiceExpressions.Model
 
         public Density<T> WithAdvantage()
         {
-            return BinaryOp<T>(this, this, (a,b) => GenericMathExtension.Max(a,b));
+            return BinaryOp<T>(this, this, (a,b) => GenericMathExtension.Max(a,b), (s,t) => $"max({s}, {t})");
+        }
+
+        public Density<T> WithDisadvantage()
+        {
+            return BinaryOp<T>(this, this, (a,b) => GenericMathExtension.Max(a,b), (s,t) => $"minx({s}, {t})");
         }
 
         public override string ToString()
@@ -319,7 +351,7 @@ namespace DiceExpressions.Model
 
         public PlotModel OxyPlot(string title = null)
         {
-            title = title ?? Name;
+            title = title ?? TrimmedName;
             var subtitle = string.Format(
                 CultureInfo.InvariantCulture,
                 "Expected = {0:0.0000}, Stdev = {1:0.00}",
@@ -345,7 +377,7 @@ namespace DiceExpressions.Model
 
         public void SaveOxyPlotPdf(string filename = null)
         {
-            filename = filename ?? Name + ".pdf";
+            filename = filename ?? TrimmedName + ".pdf";
             var oxyplot = OxyPlot(Path.GetFileName(filename));
             using (var stream = File.Create(filename))
             {
