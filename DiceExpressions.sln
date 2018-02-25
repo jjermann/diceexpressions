@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26124.0
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "diceexpressions", "diceexpressions.csproj", "{CE06DF2D-939B-41AF-9440-EE89FFCA423D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiceExpressions", "DiceExpressions/DiceExpressions.csproj", "{CE06DF2D-939B-41AF-9440-EE89FFCA423D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

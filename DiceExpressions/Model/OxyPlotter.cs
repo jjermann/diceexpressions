@@ -8,7 +8,7 @@ using OxyPlot.Axes;
 using OxyPlot.Series;
 using PType = System.Double;
 
-namespace diceexpressions
+namespace DiceExpressions.Model
 {
     public static class OxyPlotter<T>
     {

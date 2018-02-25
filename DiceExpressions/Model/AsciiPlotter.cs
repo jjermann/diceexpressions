@@ -4,7 +4,7 @@ using System.Linq;
 using Generic.Math;
 using PType = System.Double;
 
-namespace diceexpressions
+namespace DiceExpressions.Model
 {
     public static class AsciiPlotter<T>
     {

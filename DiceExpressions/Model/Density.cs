@@ -8,22 +8,22 @@ using Generic.Math;
 using OxyPlot;
 using PType = System.Double;
 
-namespace diceexpressions
+namespace DiceExpressions.Model
 {
     //operators make several assumptions on T
     //Expected, Variance, Stdev, Cdf assume that T can be converted to PType 
     public class Density<T> : IEquatable<Density<T>>
     {
-        private IDictionary<T, PType> densityDict;
+        private IDictionary<T, PType> _densityDict;
         public Density(IDictionary<T, PType> dict) 
         {
-            densityDict = dict;
+            _densityDict = dict;
         }
 
         protected virtual string Name => "Density";
-        public PType this[T key] => densityDict[key];
-        public IList<T> Keys => densityDict.Keys.OrderBy(k => k).ToList();
-        public IList<PType> Values => Keys.Select(k => densityDict[k]).ToList();
+        public PType this[T key] => _densityDict[key];
+        public IList<T> Keys => _densityDict.Keys.OrderBy(k => k).ToList();
+        public IList<PType> Values => Keys.Select(k => _densityDict[k]).ToList();
 
         public bool Equals(Density<T> other)
         {
@@ -78,7 +78,7 @@ namespace diceexpressions
 
         public static implicit operator Density<PType>(Density<T> d)
         {
-            var newDict = d.densityDict.ToDictionary(p => GenericMath.Convert<T, PType>(p.Key), p => p.Value);
+            var newDict = d._densityDict.ToDictionary(p => GenericMath.Convert<T, PType>(p.Key), p => p.Value);
             return new Density<PType>(newDict);
         }
 
@@ -260,13 +260,13 @@ namespace diceexpressions
         public PType Expected()
         {
             return GenericMathExtension.Sum(
-                densityDict.Select(p => GenericMath.MultiplyAlternative(p.Value, p.Key)));
+                _densityDict.Select(p => GenericMath.MultiplyAlternative(p.Value, p.Key)));
         }
         public PType Variance()
         {
             var expected = Expected();
             return GenericMathExtension.Sum(
-                densityDict.Select(p => 
+                _densityDict.Select(p => 
                 {
                     var dist = GenericMath.SubtractAlternative(expected, p.Key);
                     return GenericMath.MultiplyAlternative(p.Value, GenericMath.Multiply(dist, dist));
@@ -333,6 +333,14 @@ namespace diceexpressions
                 subtitle: subtitle,
                 yMin: 0.0,
                 valueLabelFormatter: p => p.ToString("P", CultureInfo.InvariantCulture));
+        }
+
+        public string GetOxyPlotSvg(string title)
+        {
+            var oxyplot = OxyPlot(title);
+            var svgExporter = new SvgExporter { Width = 600, Height = 400 };
+            var res = svgExporter.ExportToString(oxyplot);
+            return res;
         }
 
         public void SaveOxyPlotPdf(string filename = null)

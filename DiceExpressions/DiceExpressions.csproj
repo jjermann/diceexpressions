@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Update="**\*.xaml.cs">
+      <DependentUpon>%(Filename)</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="**\*.xaml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Assets\*"/>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Generic.Math" Version="*"/>
+    <PackageReference Include="OxyPlot.Core" Version="2.0.0-unstable1035"/>
+    <PackageReference Include="Avalonia" Version="*"/>
+    <PackageReference Include="Avalonia.Desktop" Version="*"/>
+    <PackageReference Include="Avalonia.ReactiveUI" Version="*"/>
+  </ItemGroup>
+</Project>
