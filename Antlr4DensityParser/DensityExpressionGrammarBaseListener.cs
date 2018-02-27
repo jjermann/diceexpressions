@@ -74,6 +74,19 @@ public partial class DensityExpressionGrammarBaseListener : IDensityExpressionGr
 	public virtual void ExitDensity([NotNull] DensityExpressionGrammarParser.DensityContext context) { }
 
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="DensityExpressionGrammarParser.multiDensityList"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterMultiDensityList([NotNull] DensityExpressionGrammarParser.MultiDensityListContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="DensityExpressionGrammarParser.multiDensityList"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitMultiDensityList([NotNull] DensityExpressionGrammarParser.MultiDensityListContext context) { }
+
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="DensityExpressionGrammarParser.term"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>

@@ -64,6 +64,17 @@ public interface IDensityExpressionGrammarListener : IParseTreeListener {
 	void ExitDensity([NotNull] DensityExpressionGrammarParser.DensityContext context);
 
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="DensityExpressionGrammarParser.multiDensityList"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterMultiDensityList([NotNull] DensityExpressionGrammarParser.MultiDensityListContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="DensityExpressionGrammarParser.multiDensityList"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitMultiDensityList([NotNull] DensityExpressionGrammarParser.MultiDensityListContext context);
+
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="DensityExpressionGrammarParser.term"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>

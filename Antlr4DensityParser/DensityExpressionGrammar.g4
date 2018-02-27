@@ -9,6 +9,8 @@ probability:                   density binaryBooleanOp density ;
 density:                       term ((PLUS | MINUS) term)* ;
 //                               | density CALL functionName LPAREN functionArguments? RPAREN ;
 
+multiDensityList:              LBRACK density (SEP density)* RBRACK;
+
 // functionName:                  strVariable ;
 
 // functionArguments:             strVariable (SEP strVariable)* ;
@@ -20,6 +22,7 @@ factor:                          MINUS factor
 
 atom:                            number
                                | variable
+                               | multiDensityList
                                | LPAREN density RPAREN ;
 
 number:                        NUMBER ;
@@ -47,6 +50,8 @@ CALL:                          '.' ;
 SEP:                           ',' ;
 LPAREN:                        '(' ;
 RPAREN:                        ')' ;
+LBRACK:                        '[' ;
+RBRACK:                        ']' ;
 PLUS:                          '+' ;
 MINUS:                         '-' ;
 TIMES:                         '*' ;

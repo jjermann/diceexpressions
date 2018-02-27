@@ -6,11 +6,9 @@ namespace DiceExpressions.ModelHelpers
 {
     public class DieVisitor : DensityVisitor<int>
     {
-        public override Density<int> VisitNumber(DensityExpressionGrammarParser.NumberContext ctx)
+        public override int VisitNumber(DensityExpressionGrammarParser.NumberContext ctx)
         {
-            var number = int.Parse(ctx.NUMBER().GetText());
-            var density = new Constant<int>(number);
-            return density;
+            return int.Parse(ctx.NUMBER().GetText());
         }
 
         public override Density<int> VisitVariable(DensityExpressionGrammarParser.VariableContext ctx)

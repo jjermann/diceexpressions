@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using DiceExpressions.Model;
 using PType = System.Double;
 
@@ -94,6 +95,13 @@ namespace DiceExpressions.ModelHelpers
             }
         }
 
+        virtual public MultiDensity<T> VisitMultiDensity(DensityExpressionGrammarParser.MultiDensityListContext ctx)
+        {
+            var dList = ctx.density().Select(c => VisitDensity(c)).ToList();
+            var multiDensity = new MultiDensity<T>(dList);
+            return multiDensity;
+        }
+
         // public List<string> VisitFunctionArguments(DensityExpressionGrammarParser.FunctionArgumentsContext ctx)
         // {
         //     var argumentList = new List<string>();
@@ -143,14 +151,32 @@ namespace DiceExpressions.ModelHelpers
         {
             var isNumber = ctx.number() != null;
             var isVariable = ctx.variable() != null;
-            var isExpression = ctx.density() != null;
-            var density = isNumber
-                ? VisitNumber(ctx.number())
-                : (isVariable ? VisitVariable(ctx.variable()) : VisitDensity(ctx.density()));
+            var isDensity = ctx.LPAREN() != null;
+            var isMultiDensity = ctx.multiDensityList() != null;
+
+            Density<T> density;
+            if (isNumber)
+            {
+                var num = VisitNumber(ctx.number());
+                density = new Density<T>(num);
+            } else if (isVariable)
+            {
+                var vDensity = VisitVariable(ctx.variable());
+                density = vDensity;
+            } else if (isDensity)
+            {
+                density = VisitDensity(ctx.density());
+            } else if (isMultiDensity)
+            {
+                density = VisitMultiDensity(ctx.multiDensityList());
+            } else
+            {
+                throw new NotImplementedException();
+            }
             return density;
         }
 
-        abstract public Density<T> VisitNumber(DensityExpressionGrammarParser.NumberContext ctx);
+        abstract public T VisitNumber(DensityExpressionGrammarParser.NumberContext ctx);
 
         abstract public Density<T> VisitVariable(DensityExpressionGrammarParser.VariableContext ctx);
 
