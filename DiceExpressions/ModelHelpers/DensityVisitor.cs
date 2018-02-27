@@ -1,39 +1,113 @@
 using System;
+using System.Collections.Generic;
 using DiceExpressions.Model;
+using PType = System.Double;
 
 namespace DiceExpressions.ModelHelpers
 {
+    //TODO: Do we need DensityExpressionGrammarBaseListener?
     public abstract class DensityVisitor<T> : DensityExpressionGrammarBaseListener
     {
-        public Density<T> VisitCompileUnit(DensityExpressionGrammarParser.CompileUnitContext ctx)
+        virtual public DensityExpressionResult<T> VisitCompileUnit(DensityExpressionGrammarParser.CompileUnitContext ctx)
         {
-            var density = VisitExpression(ctx.expression(0));
-            return density;
-        }
+            var isDensity = ctx.density() != null;
+            var isProbability = ctx.probability() != null;
+            var density = isDensity
+                ? VisitDensity(ctx.density())
+                : null;
+            var probability = isProbability
+                ? VisitProbability(ctx.probability())
+                : (PType?)null;
+            var errorString = (isDensity || isProbability)
+                ? null
+                : "No valid Density or Probability!";
 
-        public Density<T> VisitExpression(DensityExpressionGrammarParser.ExpressionContext ctx)
-        {
-            var density = VisitTerm(ctx.term(0));
-            for (var i = 1; i < ctx.term().Length; i++)
+            var res = new DensityExpressionResult<T>
             {
-                var isPlus = ctx.PLUS(i-1) != null;
-                var isMinus = ctx.MINUS(i-1) != null;
-                var tmpDensity = VisitTerm(ctx.term(i));
-                if (isPlus)
-                {
-                    density += tmpDensity;
-                } else if (isMinus)
-                {
-                    density -= tmpDensity;
-                } else
-                {
-                    throw new NotImplementedException();
-                }
-            }
-            return density;
+                Density = density,
+                Probability = probability,
+                ErrorString = errorString
+            };
+
+            return res;
         }
 
-        public Density<T> VisitTerm(DensityExpressionGrammarParser.TermContext ctx)
+        virtual public PType VisitProbability(DensityExpressionGrammarParser.ProbabilityContext ctx)
+        {
+            var leftDensity = VisitDensity(ctx.density(0));
+            var rightDensity = VisitDensity(ctx.density(1));
+            var opCtx = ctx.binaryBooleanOp();
+            if (opCtx.EQ() != null)
+            {
+                return leftDensity == rightDensity;
+            } else if (opCtx.NEQ() != null)
+            {
+                return leftDensity != rightDensity;
+            } else if (opCtx.LT() != null)
+            {
+                return leftDensity < rightDensity;
+            } else if (opCtx.LE() != null)
+            {
+                return leftDensity <= rightDensity;
+            } else if (opCtx.GT() != null)
+            {
+                return leftDensity > rightDensity;
+            } else if (opCtx.GE() != null)
+            {
+                return leftDensity >= rightDensity;
+            } else
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        virtual public Density<T> VisitDensity(DensityExpressionGrammarParser.DensityContext ctx)
+        {
+            var isFunction = false;
+            // var isFunction = ctx.functionName() != null;
+            if (isFunction)
+            {
+                throw new NotImplementedException();
+                // var functionName = ctx.functionName().GetText();
+                // var functionArguments = VisitFunctionArguments(ctx.functionArguments());
+                // return ParseDensityFunction(functionName, functionArguments.ToArray());
+            } else
+            {
+                var density = VisitTerm(ctx.term(0));
+                for (var i = 1; i < ctx.term().Length; i++)
+                {
+                    var isPlus = ctx.PLUS(i-1) != null;
+                    var isMinus = ctx.MINUS(i-1) != null;
+                    var tmpDensity = VisitTerm(ctx.term(i));
+                    if (isPlus)
+                    {
+                        density += tmpDensity;
+                    } else if (isMinus)
+                    {
+                        density -= tmpDensity;
+                    } else
+                    {
+                        throw new NotImplementedException();
+                    }
+                }
+                return density;
+            }
+        }
+
+        // public List<string> VisitFunctionArguments(DensityExpressionGrammarParser.FunctionArgumentsContext ctx)
+        // {
+        //     var argumentList = new List<string>();
+        //     if (ctx != null)
+        //     {
+        //         for (var i = 0; i < ctx.strVariable().Length; i++) {
+        //             var tmpArgument = ctx.strVariable(i).GetText();
+        //             argumentList.Add(tmpArgument);
+        //         }
+        //     }
+        //     return argumentList;
+        // }
+
+        virtual public Density<T> VisitTerm(DensityExpressionGrammarParser.TermContext ctx)
         {
             var density = VisitFactor(ctx.factor(0));
             for (var i = 1; i < ctx.factor().Length; i++)
@@ -55,30 +129,31 @@ namespace DiceExpressions.ModelHelpers
             return density;
         }
 
-        public Density<T> VisitFactor(DensityExpressionGrammarParser.FactorContext ctx)
+        virtual public Density<T> VisitFactor(DensityExpressionGrammarParser.FactorContext ctx)
         {
             var isAtom = ctx.atom() != null;
-            var isPlus = ctx.PLUS() != null;
             var isMinus = ctx.MINUS() != null;
             var density = isAtom
                 ? VisitAtom(ctx.atom())
-                : (isPlus ? VisitFactor(ctx.factor()) : -VisitFactor(ctx.factor()));
+                : -VisitFactor(ctx.factor());
             return density;
         }
 
-        public Density<T> VisitAtom(DensityExpressionGrammarParser.AtomContext ctx)
+        virtual public Density<T> VisitAtom(DensityExpressionGrammarParser.AtomContext ctx)
         {
             var isNumber = ctx.number() != null;
             var isVariable = ctx.variable() != null;
-            var isExpression = ctx.expression() != null;
+            var isExpression = ctx.density() != null;
             var density = isNumber
                 ? VisitNumber(ctx.number())
-                : (isVariable ? VisitVariable(ctx.variable()) : VisitExpression(ctx.expression()));
+                : (isVariable ? VisitVariable(ctx.variable()) : VisitDensity(ctx.density()));
             return density;
         }
 
         abstract public Density<T> VisitNumber(DensityExpressionGrammarParser.NumberContext ctx);
 
         abstract public Density<T> VisitVariable(DensityExpressionGrammarParser.VariableContext ctx);
+
+        // abstract public Density<T> ParseDensityFunction(string functionName, params string[] functionArguments);
     }
 }

@@ -23,7 +23,7 @@ namespace DiceExpressions.Model
 
             p = GenericMathExtension.Max(p, minP);
             p = GenericMathExtension.Min(p, maxP);
-            
+
             var unroundedZeroPosition = GenericMath.Divide(GenericMath.MultiplyAlternative((correctedZero-minP),plotWidth),(maxP-minP));
             var correctedZeroPosition = GenericMathExtension.Round(unroundedZeroPosition);
             var unroundedPosition = GenericMath.Divide(GenericMath.MultiplyAlternative((p-minP),plotWidth),(maxP-minP));
@@ -33,8 +33,8 @@ namespace DiceExpressions.Model
                 + string.Concat(Enumerable.Repeat(VoidChar, plotWidth-position));
             if (correctedZeroPosition > 0 && correctedZeroPosition < plotWidth)
             {
-                mainContent = mainContent.Substring(0, correctedZeroPosition) 
-                    + SepChar 
+                mainContent = mainContent.Substring(0, correctedZeroPosition)
+                    + SepChar
                     + mainContent.Substring(correctedZeroPosition + 1);
             }
             var result = belowMin
@@ -67,7 +67,7 @@ namespace DiceExpressions.Model
             var mainContent = string.Concat(Enumerable.Repeat(FillChar, plotWidth));
             if (relPosition >= 0)
             {
-                mainContent = mainContent.Substring(0, correctedZeroPosition) 
+                mainContent = mainContent.Substring(0, correctedZeroPosition)
                     + string.Concat(Enumerable.Repeat(FillChar, relPosition))
                     + mainContent.Substring(correctedZeroPosition + relPosition);
             } else
@@ -80,7 +80,7 @@ namespace DiceExpressions.Model
             if (correctedZeroPosition > 0 && correctedZeroPosition < plotWidth)
             {
                 mainContent = mainContent.Substring(0, correctedZeroPosition)
-                    + SepChar 
+                    + SepChar
                     + mainContent.Substring(correctedZeroPosition + 1);
             }
             var result = belowMin || correctedZero > 0
@@ -107,7 +107,7 @@ namespace DiceExpressions.Model
             var formatString = asPercentage
                 ? "{0:>12}\t{1:>12.2%}\t{2}"
                 : "{0:>12}\t{1:>12}\t{2}";
-            
+
             if (centered)
             {
                 var result = string.Join(Environment.NewLine, inputs.Select(k => GetPlotLine(f(k), setMinP, setMaxP, plotWidth)));

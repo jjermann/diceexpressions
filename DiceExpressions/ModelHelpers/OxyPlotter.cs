@@ -47,10 +47,10 @@ namespace DiceExpressions.Model
             var xMaxFinal = xMax ?? GenericMath.Convert<T, double>     (GenericMathExtension.Max(inputList.ToArray()));
             var yMinFinal = yMin ?? GenericMath.Convert<PType, double> (GenericMathExtension.Min(inputList.Select(k => f(k)).ToArray()));
             var yMaxFinal = yMax ?? GenericMath.Convert<PType, double> (GenericMathExtension.Max(inputList.Select(k => f(k)).ToArray()));
-            var xAxis = new LinearAxis 
-            { 
-                Position = AxisPosition.Bottom, 
-                Minimum = xMinFinal, 
+            var xAxis = new LinearAxis
+            {
+                Position = AxisPosition.Bottom,
+                Minimum = xMinFinal,
                 Maximum = xMaxFinal
             };
             if (keyLabelFormatter != null)

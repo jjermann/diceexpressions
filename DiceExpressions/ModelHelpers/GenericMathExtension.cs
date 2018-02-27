@@ -7,6 +7,11 @@ namespace DiceExpressions.Model
 {
     public static class GenericMathExtension
     {
+        //TODO
+        public static T One<T>()
+        {
+            return (T)(dynamic)(1);
+        }
         public static T Sum<T>(params T[] source)
         {
             return Sum<T>(source.ToList());
@@ -22,6 +27,23 @@ namespace DiceExpressions.Model
                 }
             }
             return sum;
+        }
+
+        public static T Product<T>(params T[] source)
+        {
+            return Product<T>(source.ToList());
+        }
+        public static T Product<T>(IEnumerable<T> source)
+        {
+            var product = One<T>();
+            foreach (var value in source)
+            {
+                if (value != null)
+                {
+                    product = GenericMath<T>.Multiply(product, value);
+                }
+            }
+            return product;
         }
 
         public static T Average<T>(params T[] source)
@@ -41,6 +63,74 @@ namespace DiceExpressions.Model
                 }
             }
             return sum;
+        }
+
+        public static IEnumerable<T> GetNLargest<T>(IEnumerable<T> source, int count)
+        {
+            if (count < 0)
+            {
+                throw new NotImplementedException();
+            }
+            if (count == 0)
+            {
+                return Enumerable.Empty<T>();
+            }
+            var sourceList = source.ToList();
+            count = Math.Min(sourceList.Count, count);
+            var resSet = sourceList.Take(count).ToList();
+            var currentMin = Min<T>(resSet);
+
+            foreach (var t in sourceList.Skip(count))
+            {
+                if (GenericMath.LessThanOrEqual(t,currentMin))
+                {
+                    continue;
+                }
+                resSet.Remove(currentMin);
+                resSet.Add(t);
+                currentMin = Min<T>(resSet);
+            }
+            return resSet.OrderByDescending(i => i);
+        }
+
+        public static IEnumerable<T> GetNSmallest<T>(IEnumerable<T> source, int count)
+        {
+            if (count < 0)
+            {
+                throw new NotImplementedException();
+            }
+            if (count == 0)
+            {
+                return Enumerable.Empty<T>();
+            }
+            var sourceList = source.ToList();
+            count = Math.Min(sourceList.Count, count);
+            var resSet = sourceList.Take(count).ToList();
+            var currentMax = Max<T>(resSet);
+
+            foreach (var value in sourceList.Skip(count))
+            {
+                if (GenericMath.GreaterThanOrEqual(value,currentMax))
+                {
+                    continue;
+                }
+                resSet.Remove(currentMax);
+                resSet.Add(value);
+                currentMax = Max<T>(resSet);
+            }
+            return resSet.OrderBy(i => i);
+        }
+
+        public static T SumNLargest<T>(IEnumerable<T> source, int count)
+        {
+            var nlargest = GetNLargest(source, count);
+            return Sum(nlargest);
+        }
+
+        public static T SumNSmallest<T>(IEnumerable<T> source, int count)
+        {
+            var nsmallest = GetNSmallest(source, count);
+            return Sum(nsmallest);
         }
 
         public static T Abs<T>(T value)

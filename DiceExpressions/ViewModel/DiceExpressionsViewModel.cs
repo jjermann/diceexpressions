@@ -14,10 +14,10 @@ namespace DiceExpressions.ViewModel
             DiceExpression = "(d20 + ad20) * d2 + 3";
         }
 
-        protected override Density<int> ParseDiceExpression(string expression)
+        protected override DensityExpressionResult<int> ParseDiceExpression(string expression)
         {
-            var density = DieParser.Parse(expression);
-            return density;
+            var res = DieParser.Parse(expression);
+            return res;
         }
     }
 }

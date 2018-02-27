@@ -37,7 +37,7 @@ namespace DiceExpressions.Model
     public class Zero<T> : Constant<T>
     {
         public Zero() : base(GenericMath<T>.Zero)
-         { 
+         {
              Name = $"{GenericMath<T>.Zero}";
          }
     }
@@ -45,7 +45,7 @@ namespace DiceExpressions.Model
     public class One<T> : Constant<T>
     {
         public One() : base((T)(dynamic)1)
-        { 
+        {
             Name = $"{(T)(dynamic)1}";
         }
     }

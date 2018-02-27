@@ -1,128 +1,62 @@
 grammar DensityExpressionGrammar;
 options {language=CSharp_v4_0;}
 
-compileUnit
-    : expression + EOF
-    ;
+compileUnit:                     density
+                               | probability ;
 
-equation
-   : expression relop expression
-   ;
+probability:                   density binaryBooleanOp density ;
 
-expression
-   : term ((PLUS | MINUS) term)*
-   ;
+density:                       term ((PLUS | MINUS) term)* ;
+//                               | density CALL functionName LPAREN functionArguments? RPAREN ;
 
-term
-   : factor ((TIMES | DIV) factor)*
-   ;
+// functionName:                  strVariable ;
 
-factor
-   : PLUS factor
-   | MINUS factor
-   | atom
-   ;
+// functionArguments:             strVariable (SEP strVariable)* ;
 
-atom
-   : number
-   | variable
-   | LPAREN expression RPAREN
-   ;
+term:                          factor ((TIMES | DIV) factor)* ;
 
-number
-   : NUMBER
-   ;
+factor:                          MINUS factor
+                               | atom ;
 
-variable
-   : VARIABLE
-   ;
+atom:                            number
+                               | variable
+                               | LPAREN density RPAREN ;
 
-relop
-   : EQ
-   | GT
-   | LT
-   ;
+number:                        NUMBER ;
 
+variable:                      VARIABLE ;
 
-NUMBER
-   : VALID_NUMBER_START VALID_NUMBER_CHAR*
-   ;
+strVariable:                   VARIABLE ;
 
+binaryBooleanOp:                 EQ
+                               | NEQ
+                               | GT
+                               | LT
+                               | GE
+                               | LE ;
 
-VARIABLE
-   : VALID_ID_START VALID_ID_CHAR*
-   ;
+NUMBER:                        VALID_NUMBER_START VALID_NUMBER_CHAR* ;
+VARIABLE:                      VALID_ID_START VALID_ID_CHAR* ;
 
+fragment VALID_ID_START:       ('a' .. 'z') | ('A' .. 'Z') | '_' ;
+fragment VALID_ID_CHAR:        VALID_ID_START | ('0' .. '9') ;
+fragment VALID_NUMBER_START:   ('1' .. '9') ;
+fragment VALID_NUMBER_CHAR:    VALID_NUMBER_START | '0' ;
 
-fragment VALID_ID_START
-   : ('a' .. 'z') | ('A' .. 'Z') | '_'
-   ;
+CALL:                          '.' ;
+SEP:                           ',' ;
+LPAREN:                        '(' ;
+RPAREN:                        ')' ;
+PLUS:                          '+' ;
+MINUS:                         '-' ;
+TIMES:                         '*' ;
+DIV:                           '/' ;
 
+EQ:                            '==' ;
+NEQ:                           '<>' | '><' | '!=';
+LT:                            '<' ;
+LE:                            '<=' | '=<';
+GT:                            '>' ;
+GE:                            '=<' | '<=' ;
 
-fragment VALID_ID_CHAR
-   : VALID_ID_START | ('0' .. '9')
-   ;
-
-
-fragment VALID_NUMBER_START
-   : ('1' .. '9')
-   ;
-
-fragment VALID_NUMBER_CHAR
-   : VALID_NUMBER_START | '0'
-   ;
-
-fragment SIGN
-   : ('+' | '-')
-   ;
-
-
-LPAREN
-   : '('
-   ;
-
-
-RPAREN
-   : ')'
-   ;
-
-
-PLUS
-   : '+'
-   ;
-
-
-MINUS
-   : '-'
-   ;
-
-
-TIMES
-   : '*'
-   ;
-
-
-DIV
-   : '/'
-   ;
-
-
-GT
-   : '>'
-   ;
-
-
-LT
-   : '<'
-   ;
-
-
-EQ
-   : '='
-   ;
-
-
-WS
-   : [ \r\n\t] + -> skip
-   ;
-
+WS:                            [\r\n\t]+ -> skip ;

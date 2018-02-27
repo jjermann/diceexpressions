@@ -42,26 +42,26 @@ public interface IDensityExpressionGrammarListener : IParseTreeListener {
 	void ExitCompileUnit([NotNull] DensityExpressionGrammarParser.CompileUnitContext context);
 
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="DensityExpressionGrammarParser.equation"/>.
+	/// Enter a parse tree produced by <see cref="DensityExpressionGrammarParser.probability"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterEquation([NotNull] DensityExpressionGrammarParser.EquationContext context);
+	void EnterProbability([NotNull] DensityExpressionGrammarParser.ProbabilityContext context);
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="DensityExpressionGrammarParser.equation"/>.
+	/// Exit a parse tree produced by <see cref="DensityExpressionGrammarParser.probability"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitEquation([NotNull] DensityExpressionGrammarParser.EquationContext context);
+	void ExitProbability([NotNull] DensityExpressionGrammarParser.ProbabilityContext context);
 
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="DensityExpressionGrammarParser.expression"/>.
+	/// Enter a parse tree produced by <see cref="DensityExpressionGrammarParser.density"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterExpression([NotNull] DensityExpressionGrammarParser.ExpressionContext context);
+	void EnterDensity([NotNull] DensityExpressionGrammarParser.DensityContext context);
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="DensityExpressionGrammarParser.expression"/>.
+	/// Exit a parse tree produced by <see cref="DensityExpressionGrammarParser.density"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitExpression([NotNull] DensityExpressionGrammarParser.ExpressionContext context);
+	void ExitDensity([NotNull] DensityExpressionGrammarParser.DensityContext context);
 
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="DensityExpressionGrammarParser.term"/>.
@@ -119,13 +119,24 @@ public interface IDensityExpressionGrammarListener : IParseTreeListener {
 	void ExitVariable([NotNull] DensityExpressionGrammarParser.VariableContext context);
 
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="DensityExpressionGrammarParser.relop"/>.
+	/// Enter a parse tree produced by <see cref="DensityExpressionGrammarParser.strVariable"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterRelop([NotNull] DensityExpressionGrammarParser.RelopContext context);
+	void EnterStrVariable([NotNull] DensityExpressionGrammarParser.StrVariableContext context);
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="DensityExpressionGrammarParser.relop"/>.
+	/// Exit a parse tree produced by <see cref="DensityExpressionGrammarParser.strVariable"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitRelop([NotNull] DensityExpressionGrammarParser.RelopContext context);
+	void ExitStrVariable([NotNull] DensityExpressionGrammarParser.StrVariableContext context);
+
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="DensityExpressionGrammarParser.binaryBooleanOp"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterBinaryBooleanOp([NotNull] DensityExpressionGrammarParser.BinaryBooleanOpContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="DensityExpressionGrammarParser.binaryBooleanOp"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitBinaryBooleanOp([NotNull] DensityExpressionGrammarParser.BinaryBooleanOpContext context);
 }

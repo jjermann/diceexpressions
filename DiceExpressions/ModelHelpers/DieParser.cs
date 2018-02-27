@@ -7,10 +7,13 @@ namespace DiceExpressions.ModelHelper
 {
     public static class DieParser
     {
-        public static Density<int> Parse(string densityStr)
+        public static DensityExpressionResult<int> Parse(string densityStr)
         {
             if (string.IsNullOrEmpty(densityStr)) {
-                return null;
+                var res = new DensityExpressionResult<int> {
+                    ErrorString = "Empty expression string!"
+                };
+                return res;
             }
             try
             {
@@ -21,11 +24,14 @@ namespace DiceExpressions.ModelHelper
 
                 var ctx = parser.compileUnit();
                 var visitor = new DieVisitor();
-                var density = visitor.VisitCompileUnit(ctx);
-                return density;
-            } catch(Exception)
+                var res = visitor.VisitCompileUnit(ctx);
+                return res;
+            } catch(Exception e)
             {
-                return null;
+                var res = new DensityExpressionResult<int> {
+                    ErrorString = e.Message
+                };
+                return res;
             }
         }
     }

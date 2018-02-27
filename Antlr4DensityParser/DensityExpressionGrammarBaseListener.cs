@@ -48,30 +48,30 @@ public partial class DensityExpressionGrammarBaseListener : IDensityExpressionGr
 	public virtual void ExitCompileUnit([NotNull] DensityExpressionGrammarParser.CompileUnitContext context) { }
 
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="DensityExpressionGrammarParser.equation"/>.
+	/// Enter a parse tree produced by <see cref="DensityExpressionGrammarParser.probability"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterEquation([NotNull] DensityExpressionGrammarParser.EquationContext context) { }
+	public virtual void EnterProbability([NotNull] DensityExpressionGrammarParser.ProbabilityContext context) { }
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="DensityExpressionGrammarParser.equation"/>.
+	/// Exit a parse tree produced by <see cref="DensityExpressionGrammarParser.probability"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitEquation([NotNull] DensityExpressionGrammarParser.EquationContext context) { }
+	public virtual void ExitProbability([NotNull] DensityExpressionGrammarParser.ProbabilityContext context) { }
 
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="DensityExpressionGrammarParser.expression"/>.
+	/// Enter a parse tree produced by <see cref="DensityExpressionGrammarParser.density"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterExpression([NotNull] DensityExpressionGrammarParser.ExpressionContext context) { }
+	public virtual void EnterDensity([NotNull] DensityExpressionGrammarParser.DensityContext context) { }
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="DensityExpressionGrammarParser.expression"/>.
+	/// Exit a parse tree produced by <see cref="DensityExpressionGrammarParser.density"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitExpression([NotNull] DensityExpressionGrammarParser.ExpressionContext context) { }
+	public virtual void ExitDensity([NotNull] DensityExpressionGrammarParser.DensityContext context) { }
 
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="DensityExpressionGrammarParser.term"/>.
@@ -139,17 +139,30 @@ public partial class DensityExpressionGrammarBaseListener : IDensityExpressionGr
 	public virtual void ExitVariable([NotNull] DensityExpressionGrammarParser.VariableContext context) { }
 
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="DensityExpressionGrammarParser.relop"/>.
+	/// Enter a parse tree produced by <see cref="DensityExpressionGrammarParser.strVariable"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterRelop([NotNull] DensityExpressionGrammarParser.RelopContext context) { }
+	public virtual void EnterStrVariable([NotNull] DensityExpressionGrammarParser.StrVariableContext context) { }
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="DensityExpressionGrammarParser.relop"/>.
+	/// Exit a parse tree produced by <see cref="DensityExpressionGrammarParser.strVariable"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitRelop([NotNull] DensityExpressionGrammarParser.RelopContext context) { }
+	public virtual void ExitStrVariable([NotNull] DensityExpressionGrammarParser.StrVariableContext context) { }
+
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="DensityExpressionGrammarParser.binaryBooleanOp"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterBinaryBooleanOp([NotNull] DensityExpressionGrammarParser.BinaryBooleanOpContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="DensityExpressionGrammarParser.binaryBooleanOp"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitBinaryBooleanOp([NotNull] DensityExpressionGrammarParser.BinaryBooleanOpContext context) { }
 
 	/// <inheritdoc/>
 	/// <remarks>The default implementation does nothing.</remarks>
