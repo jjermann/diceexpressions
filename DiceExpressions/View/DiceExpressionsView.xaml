@@ -8,13 +8,11 @@
                                   FontSize = "20" />
             <TextBox                  Name = "diceExpression"
                                       Text = "{Binding DiceExpression, Mode=TwoWay}"
-                           BorderThickness = "1"
-                                  FontSize = "20" />
-            <TextBox                  Name = "parseError"
-                                      Text = "{Binding ParseError}"
-                                IsReadOnly = "True"
                            BorderThickness = "0"
+                                  FontSize = "20" />
+            <TextBlock                Text = "{Binding ParseError}"
                                 Foreground = "Red"
+                                      Name = "parseError"
                                   FontSize = "20" />
 
             <Rectangle HorizontalAlignment = "Stretch" Fill="Blue" Height="1" Margin = "0 10" />

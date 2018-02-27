@@ -14,24 +14,24 @@ namespace DiceExpressions.ViewModel
         {
             this.WhenAnyValue(x => x.DiceExpression)
                 .Select(x => ParseDiceExpression(x))
-                .ToProperty(this, x => x.ParsedExpression, out _parsedExpression);
+                .ToProperty(this, x => x.ParsedExpression, out _parsedExpression, null);
             this.WhenAnyValue(x => x.ParsedExpression)
                 .Select(x => (x == null) ? "No Expression to parse!" : x.ErrorString)
-                .ToProperty(this, x => x.ParseError, out _parseError);
+                .ToProperty(this, x => x.ParseError, out _parseError, null);
             this.WhenAnyValue(x => x.ParsedExpression)
                 .Where(x => x != null && x.ErrorString == null)
                 .Select(x => x?.Density)
-                .ToProperty(this, x => x.Density, out _density);
+                .ToProperty(this, x => x.Density, out _density, null);
             this.WhenAnyValue(x => x.ParsedExpression)
                 .Where(x => x != null && x.ErrorString == null)
                 .Select(x => x?.Probability)
-                .ToProperty(this, x => x.Probability, out _probability);
+                .ToProperty(this, x => x.Probability, out _probability, null);
             this.WhenAnyValue(x => x.Density)
                 .Select(x => x?.OxyPlot())
-                .ToProperty(this, x => x.Plot, out _plot);
+                .ToProperty(this, x => x.Plot, out _plot, null);
             this.WhenAnyValue(x => x.Density)
                 .Select(x => x?.TrimmedName)
-                .ToProperty(this, x => x.DensityName, out _densityName);
+                .ToProperty(this, x => x.DensityName, out _densityName, null);
         }
 
         abstract protected DensityExpressionResult<T> ParseDiceExpression(string expression);
