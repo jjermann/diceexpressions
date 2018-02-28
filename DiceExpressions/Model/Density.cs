@@ -371,14 +371,40 @@ namespace DiceExpressions.Model
             return Prob(a => GenericMath.LessThanOrEqual(GenericMath.Convert<T, PType>(a),x));
         }
 
-        public Density<T> WithAdvantage()
+        public Density<T> WithAdvantage(int n = 1)
         {
-            return BinaryOp<T>(this, this, (a,b) => GenericMathExtension.Max(a,b), (s,t) => $"max({s}, {t})");
+            if (n < 0)
+            {
+                throw new NotImplementedException();
+            }
+            if (n == 0)
+            {
+                return this;
+            }
+            if (n == 1)
+            {
+                return BinaryOp<T>(this, this, (a,b) => GenericMathExtension.Max(a,b), (s,t) => $"a{s}");
+            }
+            var mDensity = AsMultiDensity(n).MultiOp(e => GenericMathExtension.Max<T>(e), e => $"a{n}{e.First()}");
+            return mDensity;
         }
 
-        public Density<T> WithDisadvantage()
+        public Density<T> WithDisadvantage(int n = 1)
         {
-            return BinaryOp<T>(this, this, (a,b) => GenericMathExtension.Min(a,b), (s,t) => $"min({s}, {t})");
+            if (n < 0)
+            {
+                throw new NotImplementedException();
+            }
+            if (n == 0)
+            {
+                return this;
+            }
+            if (n == 1)
+            {
+                return BinaryOp<T>(this, this, (a,b) => GenericMathExtension.Min(a,b), (s,t) => $"d{s}");
+            }
+            var mDensity = AsMultiDensity(n).MultiOp(e => GenericMathExtension.Min<T>(e), e => $"d{n}{e.First()}");
+            return mDensity;
         }
 
         public override string ToString()
@@ -407,13 +433,14 @@ namespace DiceExpressions.Model
                 Expected(),
                 Stdev()
             );
-            return OxyPlotter<T>.GetPlot(
+            var plotModel = OxyPlotter<T>.GetPlot(
                 k => this[k],
                 Keys,
                 title: title,
                 subtitle: subtitle,
                 yMin: 0.0,
                 valueLabelFormatter: p => p.ToString("P", CultureInfo.InvariantCulture));
+            return plotModel;
         }
 
         public string GetOxyPlotSvg(string title)

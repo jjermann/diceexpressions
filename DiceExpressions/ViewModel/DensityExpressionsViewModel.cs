@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Reactive.Linq;
 using DiceExpressions.Model;
 using DiceExpressions.ModelHelper;
@@ -32,6 +33,9 @@ namespace DiceExpressions.ViewModel
             this.WhenAnyValue(x => x.Density)
                 .Select(x => x?.TrimmedName)
                 .ToProperty(this, x => x.DensityName, out _densityName, null);
+            this.WhenAnyValue(x => x.Probability)
+                .Select(x => x.HasValue ? x.Value.ToString("P3", CultureInfo.InvariantCulture) : (string)null)
+                .ToProperty(this, x => x.ProbabilityFormatted, out _probabilityFormatted, null);
         }
 
         abstract protected DensityExpressionResult<T> ParseDiceExpression(string expression);
@@ -67,6 +71,11 @@ namespace DiceExpressions.ViewModel
             get { return _probability.Value; }
         }
 
+        private ObservableAsPropertyHelper<string> _probabilityFormatted;
+        public string ProbabilityFormatted
+        {
+            get { return _probabilityFormatted.Value; }
+        }
         private ObservableAsPropertyHelper<string> _densityName;
         public string DensityName
         {

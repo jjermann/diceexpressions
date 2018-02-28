@@ -15,6 +15,7 @@
   <ItemGroup>
     <PackageReference Include="Generic.Math" Version="*"/>
     <PackageReference Include="OxyPlot.Core" Version="2.0.0-unstable1035"/>
+    <PackageReference Include="OxyPlot.Avalonia" Version="1.0.0"/>
     <PackageReference Include="Avalonia" Version="*"/>
     <PackageReference Include="Avalonia.Desktop" Version="*"/>
     <PackageReference Include="Avalonia.ReactiveUI" Version="*"/>

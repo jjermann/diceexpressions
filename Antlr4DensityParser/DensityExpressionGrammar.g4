@@ -1,8 +1,7 @@
 grammar DensityExpressionGrammar;
 options {language=CSharp_v4_0;}
 
-compileUnit:                     density
-                               | probability ;
+compileUnit:                   (density|probability) EOF ;
 
 probability:                   density binaryBooleanOp density ;
 
@@ -38,7 +37,7 @@ binaryBooleanOp:                 EQ
                                | GE
                                | LE ;
 
-NUMBER:                        VALID_NUMBER_START VALID_NUMBER_CHAR* ;
+NUMBER:                        '0' | VALID_NUMBER_START VALID_NUMBER_CHAR* ;
 VARIABLE:                      VALID_ID_START VALID_ID_CHAR* ;
 
 fragment VALID_ID_START:       ('a' .. 'z') | ('A' .. 'Z') | '_' ;

@@ -13,6 +13,7 @@ namespace DiceExpressions.View
             this.AttachDevTools();
         }
 
+
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);

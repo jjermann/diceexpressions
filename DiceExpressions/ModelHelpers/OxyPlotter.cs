@@ -31,7 +31,8 @@ namespace DiceExpressions.Model
             var model = new PlotModel
             {
                 Background = OxyColors.White,
-                Culture = CultureInfo.InvariantCulture
+                // PlotAreaBorderColor = OxyColors.Black,
+                Culture = CultureInfo.InvariantCulture,
             };
             if (title != null)
             {
@@ -52,6 +53,7 @@ namespace DiceExpressions.Model
                 Position = AxisPosition.Bottom,
                 Minimum = xMinFinal,
                 Maximum = xMaxFinal
+                // AxislineColor = OxyColors.Black
             };
             if (keyLabelFormatter != null)
             {
@@ -61,7 +63,8 @@ namespace DiceExpressions.Model
             {
                 Position = AxisPosition.Left,
                 Minimum = yMinFinal,
-                Maximum = yMaxFinal,
+                Maximum = yMaxFinal
+                // AxislineColor = OxyColors.Black
             };
             if (valueLabelFormatter != null)
             {

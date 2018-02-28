@@ -102,6 +102,7 @@ public partial class DensityExpressionGrammarParser : Parser {
 		_interp = new ParserATNSimulator(this,_ATN);
 	}
 	public partial class CompileUnitContext : ParserRuleContext {
+		public ITerminalNode Eof() { return GetToken(DensityExpressionGrammarParser.Eof, 0); }
 		public DensityContext density() {
 			return GetRuleContext<DensityContext>(0);
 		}
@@ -128,22 +129,24 @@ public partial class DensityExpressionGrammarParser : Parser {
 		CompileUnitContext _localctx = new CompileUnitContext(_ctx, State);
 		EnterRule(_localctx, 0, RULE_compileUnit);
 		try {
+			EnterOuterAlt(_localctx, 1);
+			{
 			State = 24;
 			_errHandler.Sync(this);
 			switch ( Interpreter.AdaptivePredict(_input,0,_ctx) ) {
 			case 1:
-				EnterOuterAlt(_localctx, 1);
 				{
 				State = 22; density();
 				}
 				break;
 
 			case 2:
-				EnterOuterAlt(_localctx, 2);
 				{
 				State = 23; probability();
 				}
 				break;
+			}
+			State = 26; Match(Eof);
 			}
 		}
 		catch (RecognitionException re) {
@@ -189,9 +192,9 @@ public partial class DensityExpressionGrammarParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 26; density();
-			State = 27; binaryBooleanOp();
 			State = 28; density();
+			State = 29; binaryBooleanOp();
+			State = 30; density();
 			}
 		}
 		catch (RecognitionException re) {
@@ -243,14 +246,14 @@ public partial class DensityExpressionGrammarParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 30; term();
-			State = 35;
+			State = 32; term();
+			State = 37;
 			_errHandler.Sync(this);
 			_la = _input.La(1);
 			while (_la==PLUS || _la==MINUS) {
 				{
 				{
-				State = 31;
+				State = 33;
 				_la = _input.La(1);
 				if ( !(_la==PLUS || _la==MINUS) ) {
 				_errHandler.RecoverInline(this);
@@ -262,10 +265,10 @@ public partial class DensityExpressionGrammarParser : Parser {
 					_errHandler.ReportMatch(this);
 					Consume();
 				}
-				State = 32; term();
+				State = 34; term();
 				}
 				}
-				State = 37;
+				State = 39;
 				_errHandler.Sync(this);
 				_la = _input.La(1);
 			}
@@ -318,23 +321,23 @@ public partial class DensityExpressionGrammarParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 38; Match(LBRACK);
-			State = 39; density();
-			State = 44;
+			State = 40; Match(LBRACK);
+			State = 41; density();
+			State = 46;
 			_errHandler.Sync(this);
 			_la = _input.La(1);
 			while (_la==SEP) {
 				{
 				{
-				State = 40; Match(SEP);
-				State = 41; density();
+				State = 42; Match(SEP);
+				State = 43; density();
 				}
 				}
-				State = 46;
+				State = 48;
 				_errHandler.Sync(this);
 				_la = _input.La(1);
 			}
-			State = 47; Match(RBRACK);
+			State = 49; Match(RBRACK);
 			}
 		}
 		catch (RecognitionException re) {
@@ -386,14 +389,14 @@ public partial class DensityExpressionGrammarParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 49; factor();
-			State = 54;
+			State = 51; factor();
+			State = 56;
 			_errHandler.Sync(this);
 			_la = _input.La(1);
 			while (_la==TIMES || _la==DIV) {
 				{
 				{
-				State = 50;
+				State = 52;
 				_la = _input.La(1);
 				if ( !(_la==TIMES || _la==DIV) ) {
 				_errHandler.RecoverInline(this);
@@ -405,10 +408,10 @@ public partial class DensityExpressionGrammarParser : Parser {
 					_errHandler.ReportMatch(this);
 					Consume();
 				}
-				State = 51; factor();
+				State = 53; factor();
 				}
 				}
-				State = 56;
+				State = 58;
 				_errHandler.Sync(this);
 				_la = _input.La(1);
 			}
@@ -453,14 +456,14 @@ public partial class DensityExpressionGrammarParser : Parser {
 		FactorContext _localctx = new FactorContext(_ctx, State);
 		EnterRule(_localctx, 10, RULE_factor);
 		try {
-			State = 60;
+			State = 62;
 			_errHandler.Sync(this);
 			switch (_input.La(1)) {
 			case MINUS:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 57; Match(MINUS);
-				State = 58; factor();
+				State = 59; Match(MINUS);
+				State = 60; factor();
 				}
 				break;
 			case NUMBER:
@@ -469,7 +472,7 @@ public partial class DensityExpressionGrammarParser : Parser {
 			case LBRACK:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 59; atom();
+				State = 61; atom();
 				}
 				break;
 			default:
@@ -522,33 +525,33 @@ public partial class DensityExpressionGrammarParser : Parser {
 		AtomContext _localctx = new AtomContext(_ctx, State);
 		EnterRule(_localctx, 12, RULE_atom);
 		try {
-			State = 69;
+			State = 71;
 			_errHandler.Sync(this);
 			switch (_input.La(1)) {
 			case NUMBER:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 62; number();
+				State = 64; number();
 				}
 				break;
 			case VARIABLE:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 63; variable();
+				State = 65; variable();
 				}
 				break;
 			case LBRACK:
 				EnterOuterAlt(_localctx, 3);
 				{
-				State = 64; multiDensityList();
+				State = 66; multiDensityList();
 				}
 				break;
 			case LPAREN:
 				EnterOuterAlt(_localctx, 4);
 				{
-				State = 65; Match(LPAREN);
-				State = 66; density();
-				State = 67; Match(RPAREN);
+				State = 67; Match(LPAREN);
+				State = 68; density();
+				State = 69; Match(RPAREN);
 				}
 				break;
 			default:
@@ -590,7 +593,7 @@ public partial class DensityExpressionGrammarParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 71; Match(NUMBER);
+			State = 73; Match(NUMBER);
 			}
 		}
 		catch (RecognitionException re) {
@@ -628,7 +631,7 @@ public partial class DensityExpressionGrammarParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 73; Match(VARIABLE);
+			State = 75; Match(VARIABLE);
 			}
 		}
 		catch (RecognitionException re) {
@@ -666,7 +669,7 @@ public partial class DensityExpressionGrammarParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 75; Match(VARIABLE);
+			State = 77; Match(VARIABLE);
 			}
 		}
 		catch (RecognitionException re) {
@@ -710,7 +713,7 @@ public partial class DensityExpressionGrammarParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 77;
+			State = 79;
 			_la = _input.La(1);
 			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << EQ) | (1L << NEQ) | (1L << LT) | (1L << LE) | (1L << GT) | (1L << GE))) != 0)) ) {
 			_errHandler.RecoverInline(this);
@@ -736,33 +739,34 @@ public partial class DensityExpressionGrammarParser : Parser {
 	}
 
 	public static readonly string _serializedATN =
-		"\x3\xAF6F\x8320\x479D\xB75C\x4880\x1605\x191C\xAB37\x3\x15R\x4\x2\t\x2"+
+		"\x3\xAF6F\x8320\x479D\xB75C\x4880\x1605\x191C\xAB37\x3\x15T\x4\x2\t\x2"+
 		"\x4\x3\t\x3\x4\x4\t\x4\x4\x5\t\x5\x4\x6\t\x6\x4\a\t\a\x4\b\t\b\x4\t\t"+
-		"\t\x4\n\t\n\x4\v\t\v\x4\f\t\f\x3\x2\x3\x2\x5\x2\x1B\n\x2\x3\x3\x3\x3\x3"+
-		"\x3\x3\x3\x3\x4\x3\x4\x3\x4\a\x4$\n\x4\f\x4\xE\x4\'\v\x4\x3\x5\x3\x5\x3"+
-		"\x5\x3\x5\a\x5-\n\x5\f\x5\xE\x5\x30\v\x5\x3\x5\x3\x5\x3\x6\x3\x6\x3\x6"+
-		"\a\x6\x37\n\x6\f\x6\xE\x6:\v\x6\x3\a\x3\a\x3\a\x5\a?\n\a\x3\b\x3\b\x3"+
-		"\b\x3\b\x3\b\x3\b\x3\b\x5\bH\n\b\x3\t\x3\t\x3\n\x3\n\x3\v\x3\v\x3\f\x3"+
-		"\f\x3\f\x2\x2\x2\r\x2\x2\x4\x2\x6\x2\b\x2\n\x2\f\x2\xE\x2\x10\x2\x12\x2"+
-		"\x14\x2\x16\x2\x2\x5\x3\x2\v\f\x3\x2\r\xE\x3\x2\xF\x14N\x2\x1A\x3\x2\x2"+
-		"\x2\x4\x1C\x3\x2\x2\x2\x6 \x3\x2\x2\x2\b(\x3\x2\x2\x2\n\x33\x3\x2\x2\x2"+
-		"\f>\x3\x2\x2\x2\xEG\x3\x2\x2\x2\x10I\x3\x2\x2\x2\x12K\x3\x2\x2\x2\x14"+
-		"M\x3\x2\x2\x2\x16O\x3\x2\x2\x2\x18\x1B\x5\x6\x4\x2\x19\x1B\x5\x4\x3\x2"+
-		"\x1A\x18\x3\x2\x2\x2\x1A\x19\x3\x2\x2\x2\x1B\x3\x3\x2\x2\x2\x1C\x1D\x5"+
-		"\x6\x4\x2\x1D\x1E\x5\x16\f\x2\x1E\x1F\x5\x6\x4\x2\x1F\x5\x3\x2\x2\x2 "+
-		"%\x5\n\x6\x2!\"\t\x2\x2\x2\"$\x5\n\x6\x2#!\x3\x2\x2\x2$\'\x3\x2\x2\x2"+
-		"%#\x3\x2\x2\x2%&\x3\x2\x2\x2&\a\x3\x2\x2\x2\'%\x3\x2\x2\x2()\a\t\x2\x2"+
-		").\x5\x6\x4\x2*+\a\x6\x2\x2+-\x5\x6\x4\x2,*\x3\x2\x2\x2-\x30\x3\x2\x2"+
-		"\x2.,\x3\x2\x2\x2./\x3\x2\x2\x2/\x31\x3\x2\x2\x2\x30.\x3\x2\x2\x2\x31"+
-		"\x32\a\n\x2\x2\x32\t\x3\x2\x2\x2\x33\x38\x5\f\a\x2\x34\x35\t\x3\x2\x2"+
-		"\x35\x37\x5\f\a\x2\x36\x34\x3\x2\x2\x2\x37:\x3\x2\x2\x2\x38\x36\x3\x2"+
-		"\x2\x2\x38\x39\x3\x2\x2\x2\x39\v\x3\x2\x2\x2:\x38\x3\x2\x2\x2;<\a\f\x2"+
-		"\x2<?\x5\f\a\x2=?\x5\xE\b\x2>;\x3\x2\x2\x2>=\x3\x2\x2\x2?\r\x3\x2\x2\x2"+
-		"@H\x5\x10\t\x2\x41H\x5\x12\n\x2\x42H\x5\b\x5\x2\x43\x44\a\a\x2\x2\x44"+
-		"\x45\x5\x6\x4\x2\x45\x46\a\b\x2\x2\x46H\x3\x2\x2\x2G@\x3\x2\x2\x2G\x41"+
-		"\x3\x2\x2\x2G\x42\x3\x2\x2\x2G\x43\x3\x2\x2\x2H\xF\x3\x2\x2\x2IJ\a\x3"+
-		"\x2\x2J\x11\x3\x2\x2\x2KL\a\x4\x2\x2L\x13\x3\x2\x2\x2MN\a\x4\x2\x2N\x15"+
-		"\x3\x2\x2\x2OP\t\x4\x2\x2P\x17\x3\x2\x2\x2\b\x1A%.\x38>G";
+		"\t\x4\n\t\n\x4\v\t\v\x4\f\t\f\x3\x2\x3\x2\x5\x2\x1B\n\x2\x3\x2\x3\x2\x3"+
+		"\x3\x3\x3\x3\x3\x3\x3\x3\x4\x3\x4\x3\x4\a\x4&\n\x4\f\x4\xE\x4)\v\x4\x3"+
+		"\x5\x3\x5\x3\x5\x3\x5\a\x5/\n\x5\f\x5\xE\x5\x32\v\x5\x3\x5\x3\x5\x3\x6"+
+		"\x3\x6\x3\x6\a\x6\x39\n\x6\f\x6\xE\x6<\v\x6\x3\a\x3\a\x3\a\x5\a\x41\n"+
+		"\a\x3\b\x3\b\x3\b\x3\b\x3\b\x3\b\x3\b\x5\bJ\n\b\x3\t\x3\t\x3\n\x3\n\x3"+
+		"\v\x3\v\x3\f\x3\f\x3\f\x2\x2\x2\r\x2\x2\x4\x2\x6\x2\b\x2\n\x2\f\x2\xE"+
+		"\x2\x10\x2\x12\x2\x14\x2\x16\x2\x2\x5\x3\x2\v\f\x3\x2\r\xE\x3\x2\xF\x14"+
+		"P\x2\x1A\x3\x2\x2\x2\x4\x1E\x3\x2\x2\x2\x6\"\x3\x2\x2\x2\b*\x3\x2\x2\x2"+
+		"\n\x35\x3\x2\x2\x2\f@\x3\x2\x2\x2\xEI\x3\x2\x2\x2\x10K\x3\x2\x2\x2\x12"+
+		"M\x3\x2\x2\x2\x14O\x3\x2\x2\x2\x16Q\x3\x2\x2\x2\x18\x1B\x5\x6\x4\x2\x19"+
+		"\x1B\x5\x4\x3\x2\x1A\x18\x3\x2\x2\x2\x1A\x19\x3\x2\x2\x2\x1B\x1C\x3\x2"+
+		"\x2\x2\x1C\x1D\a\x2\x2\x3\x1D\x3\x3\x2\x2\x2\x1E\x1F\x5\x6\x4\x2\x1F "+
+		"\x5\x16\f\x2 !\x5\x6\x4\x2!\x5\x3\x2\x2\x2\"\'\x5\n\x6\x2#$\t\x2\x2\x2"+
+		"$&\x5\n\x6\x2%#\x3\x2\x2\x2&)\x3\x2\x2\x2\'%\x3\x2\x2\x2\'(\x3\x2\x2\x2"+
+		"(\a\x3\x2\x2\x2)\'\x3\x2\x2\x2*+\a\t\x2\x2+\x30\x5\x6\x4\x2,-\a\x6\x2"+
+		"\x2-/\x5\x6\x4\x2.,\x3\x2\x2\x2/\x32\x3\x2\x2\x2\x30.\x3\x2\x2\x2\x30"+
+		"\x31\x3\x2\x2\x2\x31\x33\x3\x2\x2\x2\x32\x30\x3\x2\x2\x2\x33\x34\a\n\x2"+
+		"\x2\x34\t\x3\x2\x2\x2\x35:\x5\f\a\x2\x36\x37\t\x3\x2\x2\x37\x39\x5\f\a"+
+		"\x2\x38\x36\x3\x2\x2\x2\x39<\x3\x2\x2\x2:\x38\x3\x2\x2\x2:;\x3\x2\x2\x2"+
+		";\v\x3\x2\x2\x2<:\x3\x2\x2\x2=>\a\f\x2\x2>\x41\x5\f\a\x2?\x41\x5\xE\b"+
+		"\x2@=\x3\x2\x2\x2@?\x3\x2\x2\x2\x41\r\x3\x2\x2\x2\x42J\x5\x10\t\x2\x43"+
+		"J\x5\x12\n\x2\x44J\x5\b\x5\x2\x45\x46\a\a\x2\x2\x46G\x5\x6\x4\x2GH\a\b"+
+		"\x2\x2HJ\x3\x2\x2\x2I\x42\x3\x2\x2\x2I\x43\x3\x2\x2\x2I\x44\x3\x2\x2\x2"+
+		"I\x45\x3\x2\x2\x2J\xF\x3\x2\x2\x2KL\a\x3\x2\x2L\x11\x3\x2\x2\x2MN\a\x4"+
+		"\x2\x2N\x13\x3\x2\x2\x2OP\a\x4\x2\x2P\x15\x3\x2\x2\x2QR\t\x4\x2\x2R\x17"+
+		"\x3\x2\x2\x2\b\x1A\'\x30:@I";
 	public static readonly ATN _ATN =
 		new ATNDeserializer().Deserialize(_serializedATN.ToCharArray());
 }
