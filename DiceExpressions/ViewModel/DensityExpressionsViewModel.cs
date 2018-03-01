@@ -14,11 +14,13 @@ namespace DiceExpressions.ViewModel
     public abstract class DensityExpressionsViewModel<T> : ViewModelBase
     {
         private static readonly TimeSpan ThrottleTimeSpan = TimeSpan.FromMilliseconds(100);
+        private static readonly IScheduler UsedScheduler = Scheduler.Default;
         
         public DensityExpressionsViewModel()
         {
             this.WhenAnyValue(x => x.DiceExpression)
-                .ObserveOn(Scheduler.Default)
+                .ObserveOn(UsedScheduler)
+                .Catch(Observable.Return((string)null))
                 .Select(x => ParseDiceExpression(x))
                 .ToProperty(this, x => x.ParsedExpression, out _parsedExpression, null);
             this.WhenAnyValue(x => x.ParsedExpression)
@@ -34,7 +36,8 @@ namespace DiceExpressions.ViewModel
                 .ToProperty(this, x => x.Probability, out _probability, null);
             this.WhenAnyValue(x => x.Density)
                 .Throttle(ThrottleTimeSpan)
-                .ObserveOn(Scheduler.Default)
+                .ObserveOn(UsedScheduler)
+                .Catch(Observable.Return((Density<T>)null))
                 .Select(x => x?.OxyPlot())
                 .ToProperty(this, x => x.Plot, out _plot, null);
             this.WhenAnyValue(x => x.Density)
