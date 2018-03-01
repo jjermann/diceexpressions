@@ -15,10 +15,11 @@ namespace DiceExpressions.ViewModel
     {
         private static readonly TimeSpan ThrottleTimeSpan = TimeSpan.FromMilliseconds(100);
         private static readonly IScheduler UsedScheduler = Scheduler.Default;
-        
+
         public DensityExpressionsViewModel()
         {
             this.WhenAnyValue(x => x.DiceExpression)
+                .Throttle(ThrottleTimeSpan)
                 .ObserveOn(UsedScheduler)
                 .Catch(Observable.Return((string)null))
                 .Select(x => ParseDiceExpression(x))
