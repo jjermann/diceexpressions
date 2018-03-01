@@ -1,4 +1,6 @@
+using System;
 using System.Globalization;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using DiceExpressions.Model;
 using DiceExpressions.ModelHelper;
@@ -11,9 +13,12 @@ namespace DiceExpressions.ViewModel
 {
     public abstract class DensityExpressionsViewModel<T> : ViewModelBase
     {
+        private static readonly TimeSpan ThrottleTimeSpan = TimeSpan.FromMilliseconds(100);
+        
         public DensityExpressionsViewModel()
         {
             this.WhenAnyValue(x => x.DiceExpression)
+                .ObserveOn(Scheduler.Default)
                 .Select(x => ParseDiceExpression(x))
                 .ToProperty(this, x => x.ParsedExpression, out _parsedExpression, null);
             this.WhenAnyValue(x => x.ParsedExpression)
@@ -28,6 +33,8 @@ namespace DiceExpressions.ViewModel
                 .Select(x => x?.Probability)
                 .ToProperty(this, x => x.Probability, out _probability, null);
             this.WhenAnyValue(x => x.Density)
+                .Throttle(ThrottleTimeSpan)
+                .ObserveOn(Scheduler.Default)
                 .Select(x => x?.OxyPlot())
                 .ToProperty(this, x => x.Plot, out _plot, null);
             this.WhenAnyValue(x => x.Density)
