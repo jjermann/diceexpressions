@@ -1,15 +1,21 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using DiceExpressions.Model;
+using DiceExpressions.Model.AlgebraicStructure;
+using DiceExpressions.Model.Densities;
 using PType = System.Double;
 
-namespace DiceExpressions.ModelHelpers
+namespace DiceExpressions.Model.Helpers
 {
-    //TODO: Do we need DensityExpressionGrammarBaseListener?
-    public abstract class DensityVisitor<T> : DensityExpressionGrammarBaseListener
+    //Remark: Base class DensityExpressionGrammarBaseListener was removed
+    public abstract class DensityVisitor<G,M>
+        where G :
+            IAdditiveGroup<M>,
+            IMultiplicativeGroup<M>,
+            IComparer<M>,
+            new()
     {
-        virtual public DensityExpressionResult<T> VisitCompileUnit(DensityExpressionGrammarParser.CompileUnitContext ctx)
+        virtual public DensityExpressionResult<G,M> VisitCompileUnit(DensityExpressionGrammarParser.CompileUnitContext ctx)
         {
             var isDensity = ctx.density() != null;
             var isProbability = ctx.probability() != null;
@@ -23,7 +29,7 @@ namespace DiceExpressions.ModelHelpers
                 ? null
                 : "No valid Density or Probability!";
 
-            var res = new DensityExpressionResult<T>
+            var res = new DensityExpressionResult<G,M>
             {
                 Density = density,
                 Probability = probability,
@@ -40,29 +46,29 @@ namespace DiceExpressions.ModelHelpers
             var opCtx = ctx.binaryBooleanOp();
             if (opCtx.EQ() != null)
             {
-                return leftDensity == rightDensity;
+                return leftDensity.EqProb(rightDensity);
             } else if (opCtx.NEQ() != null)
             {
-                return leftDensity != rightDensity;
+                return leftDensity.NeqProb(rightDensity);
             } else if (opCtx.LT() != null)
             {
-                return leftDensity < rightDensity;
+                return leftDensity.LtProb(rightDensity);
             } else if (opCtx.LE() != null)
             {
-                return leftDensity <= rightDensity;
+                return leftDensity.LeqProb(rightDensity);
             } else if (opCtx.GT() != null)
             {
-                return leftDensity > rightDensity;
+                return leftDensity.GtProb(rightDensity);
             } else if (opCtx.GE() != null)
             {
-                return leftDensity >= rightDensity;
+                return leftDensity.GeqProb(rightDensity);
             } else
             {
                 throw new NotImplementedException();
             }
         }
 
-        virtual public Density<T> VisitDensity(DensityExpressionGrammarParser.DensityContext ctx)
+        virtual public Density<G,M> VisitDensity(DensityExpressionGrammarParser.DensityContext ctx)
         {
             var isFunction = false;
             // var isFunction = ctx.functionName() != null;
@@ -82,10 +88,10 @@ namespace DiceExpressions.ModelHelpers
                     var tmpDensity = VisitTerm(ctx.term(i));
                     if (isPlus)
                     {
-                        density += tmpDensity;
+                        density = density.Add(tmpDensity);
                     } else if (isMinus)
                     {
-                        density -= tmpDensity;
+                        density = density.Subtract(tmpDensity);
                     } else
                     {
                         throw new NotImplementedException();
@@ -95,10 +101,10 @@ namespace DiceExpressions.ModelHelpers
             }
         }
 
-        virtual public MultiDensity<T> VisitMultiDensity(DensityExpressionGrammarParser.MultiDensityListContext ctx)
+        virtual public MultiDensity<G,M> VisitMultiDensity(DensityExpressionGrammarParser.MultiDensityListContext ctx)
         {
             var dList = ctx.density().Select(c => VisitDensity(c)).ToList();
-            var multiDensity = new MultiDensity<T>(dList);
+            var multiDensity = new MultiDensity<G,M>(dList);
             return multiDensity;
         }
 
@@ -115,7 +121,7 @@ namespace DiceExpressions.ModelHelpers
         //     return argumentList;
         // }
 
-        virtual public Density<T> VisitTerm(DensityExpressionGrammarParser.TermContext ctx)
+        virtual public Density<G,M> VisitTerm(DensityExpressionGrammarParser.TermContext ctx)
         {
             var density = VisitFactor(ctx.factor(0));
             for (var i = 1; i < ctx.factor().Length; i++)
@@ -125,10 +131,10 @@ namespace DiceExpressions.ModelHelpers
                 var tmpDensity = VisitFactor(ctx.factor(i));
                 if (isMult)
                 {
-                    density *= tmpDensity;
+                    density = density.Multiply(tmpDensity);
                 } else if (isDiv)
                 {
-                    density /= tmpDensity;
+                    density = density.Divide(tmpDensity);
                 } else
                 {
                     throw new NotImplementedException();
@@ -137,28 +143,28 @@ namespace DiceExpressions.ModelHelpers
             return density;
         }
 
-        virtual public Density<T> VisitFactor(DensityExpressionGrammarParser.FactorContext ctx)
+        virtual public Density<G,M> VisitFactor(DensityExpressionGrammarParser.FactorContext ctx)
         {
             var isAtom = ctx.atom() != null;
             var isMinus = ctx.MINUS() != null;
             var density = isAtom
                 ? VisitAtom(ctx.atom())
-                : -VisitFactor(ctx.factor());
+                : VisitFactor(ctx.factor()).Negate();
             return density;
         }
 
-        virtual public Density<T> VisitAtom(DensityExpressionGrammarParser.AtomContext ctx)
+        virtual public Density<G,M> VisitAtom(DensityExpressionGrammarParser.AtomContext ctx)
         {
             var isNumber = ctx.number() != null;
             var isVariable = ctx.variable() != null;
             var isDensity = ctx.LPAREN() != null;
             var isMultiDensity = ctx.multiDensityList() != null;
 
-            Density<T> density;
+            Density<G,M> density;
             if (isNumber)
             {
                 var num = VisitNumber(ctx.number());
-                density = new Density<T>(num);
+                density = new Constant<G,M>(num);
             } else if (isVariable)
             {
                 var vDensity = VisitVariable(ctx.variable());
@@ -176,10 +182,10 @@ namespace DiceExpressions.ModelHelpers
             return density;
         }
 
-        abstract public T VisitNumber(DensityExpressionGrammarParser.NumberContext ctx);
+        abstract public M VisitNumber(DensityExpressionGrammarParser.NumberContext ctx);
 
-        abstract public Density<T> VisitVariable(DensityExpressionGrammarParser.VariableContext ctx);
+        abstract public Density<G,M> VisitVariable(DensityExpressionGrammarParser.VariableContext ctx);
 
-        // abstract public Density<T> ParseDensityFunction(string functionName, params string[] functionArguments);
+        // abstract public Density<G,M> ParseDensityFunction(string functionName, params string[] functionArguments);
     }
 }

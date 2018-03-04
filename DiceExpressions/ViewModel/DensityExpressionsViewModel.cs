@@ -2,19 +2,29 @@ using System;
 using System.Globalization;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
-using DiceExpressions.Model;
-using DiceExpressions.ModelHelper;
+using DiceExpressions.Model.Densities;
+using DiceExpressions.Model.Helpers;
+using DiceExpressions.Model.AlgebraicStructure;
+using DiceExpressions.Model.AlgebraicStructureHelper;
 using DiceExpressions.ViewModels;
 using OxyPlot;
 using ReactiveUI;
 using PType = System.Double;
+using System.Collections.Generic;
 
 namespace DiceExpressions.ViewModel
 {
-    public abstract class DensityExpressionsViewModel<T> : ViewModelBase
+    public abstract class DensityExpressionsViewModel<G, M> :
+        ViewModelBase
+        where G :
+            IEqualityComparer<M>,
+            IComparer<M>,
+            IEmbedTo<M, PType>,
+            new()
+        where M : struct
     {
-        private static readonly TimeSpan ThrottleTimeSpan = TimeSpan.FromMilliseconds(100);
-        private static readonly IScheduler UsedScheduler = Scheduler.Default;
+        protected static readonly TimeSpan ThrottleTimeSpan = TimeSpan.FromMilliseconds(100);
+        protected static readonly IScheduler UsedScheduler = Scheduler.Default;
 
         public DensityExpressionsViewModel()
         {
@@ -31,16 +41,16 @@ namespace DiceExpressions.ViewModel
                 .Where(x => x != null && x.ErrorString == null)
                 .Select(x => x?.Density)
                 .ToProperty(this, x => x.Density, out _density, null);
+            this.WhenAnyValue(x => x.Density)
+                .Throttle(ThrottleTimeSpan)
+                .ObserveOn(UsedScheduler)
+                .Catch(Observable.Return((Density<G,M>)null))
+                .Select(x => x?.OxyPlot())
+                .ToProperty(this, x => x.Plot, out _plot, null);
             this.WhenAnyValue(x => x.ParsedExpression)
                 .Where(x => x != null && x.ErrorString == null)
                 .Select(x => x?.Probability)
                 .ToProperty(this, x => x.Probability, out _probability, null);
-            this.WhenAnyValue(x => x.Density)
-                .Throttle(ThrottleTimeSpan)
-                .ObserveOn(UsedScheduler)
-                .Catch(Observable.Return((Density<T>)null))
-                .Select(x => x?.OxyPlot())
-                .ToProperty(this, x => x.Plot, out _plot, null);
             this.WhenAnyValue(x => x.Density)
                 .Select(x => x?.TrimmedName)
                 .ToProperty(this, x => x.DensityName, out _densityName, null);
@@ -49,7 +59,7 @@ namespace DiceExpressions.ViewModel
                 .ToProperty(this, x => x.ProbabilityFormatted, out _probabilityFormatted, null);
         }
 
-        abstract protected DensityExpressionResult<T> ParseDiceExpression(string expression);
+        abstract protected DensityExpressionResult<G,M> ParseDiceExpression(string expression);
 
         private string _diceExpression;
         public string DiceExpression
@@ -64,14 +74,14 @@ namespace DiceExpressions.ViewModel
             get { return _parseError.Value; }
         }
 
-        private ObservableAsPropertyHelper<DensityExpressionResult<T>> _parsedExpression;
-        public DensityExpressionResult<T> ParsedExpression
+        private ObservableAsPropertyHelper<DensityExpressionResult<G,M>> _parsedExpression;
+        public DensityExpressionResult<G,M> ParsedExpression
         {
             get { return _parsedExpression.Value; }
         }
 
-        private ObservableAsPropertyHelper<Density<T>> _density;
-        public Density<T> Density
+        private ObservableAsPropertyHelper<Density<G,M>> _density;
+        public Density<G,M> Density
         {
             get { return _density.Value; }
         }

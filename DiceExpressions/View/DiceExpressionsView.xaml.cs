@@ -5,7 +5,8 @@ using DiceExpressions.ViewModel;
 
 namespace DiceExpressions.View
 {
-    public class DiceExpressionsView : Window
+    public class DiceExpressionsView :
+        Window
     {
         public DiceExpressionsView()
         {

@@ -1,33 +1,40 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Generic.Math;
-using PType = System.Double;
+using DiceExpressions.Model.AlgebraicStructure;
+using DiceExpressions.Model.AlgebraicStructureHelper;
 
-namespace DiceExpressions.Model
+namespace DiceExpressions.Model.Helpers
 {
-    public static class AsciiPlotter<T>
+    //TODO: For now we assume that R is a struct to be able to use R?
+    public static class AsciiPlotter<M, F, R>
+        where F :
+            IProbabilityField<R>,
+            new()
+        where R :
+            struct
     {
-        private static PType Delta => GenericMath.Convert<double,PType>(1e-9);
+        private static readonly F PF = new F();
+        private static R Delta => PF.EmbedFrom(1e-9);
         private static string FillChar => "█";
         private static string SepChar => "│";
         private static string VoidChar => " ";
 
-        private static string GetPlotLine(PType p, PType minP, PType maxP, int plotWidth)
+        private static string GetPlotLine(R p, R minP, R maxP, int plotWidth)
         {
-            var aboveMax = GenericMath.GreaterThan(GenericMath.Subtract(p,maxP), Delta);
-            var belowMin = GenericMath.GreaterThan(GenericMath.Subtract(minP,p), Delta);
-            var correctedZero = GenericMath<PType>.Zero;
-            correctedZero = GenericMathExtension.Max(correctedZero, minP);
-            correctedZero = GenericMathExtension.Min(correctedZero, maxP);
+            var aboveMax = PF.Compare(PF.Subtract(p,maxP), Delta) > 0;
+            var belowMin = PF.Compare(PF.Subtract(minP,p), Delta) > 0;
+            var correctedZero = PF.Zero();
+            correctedZero = PF.Max(correctedZero, minP);
+            correctedZero = PF.Min(correctedZero, maxP);
 
-            p = GenericMathExtension.Max(p, minP);
-            p = GenericMathExtension.Min(p, maxP);
+            p = PF.Max(p, minP);
+            p = PF.Min(p, maxP);
 
-            var unroundedZeroPosition = GenericMath.Divide(GenericMath.MultiplyAlternative((correctedZero-minP),plotWidth),(maxP-minP));
-            var correctedZeroPosition = GenericMathExtension.Round(unroundedZeroPosition);
-            var unroundedPosition = GenericMath.Divide(GenericMath.MultiplyAlternative((p-minP),plotWidth),(maxP-minP));
-            var position = GenericMathExtension.Round(unroundedPosition);
+            var unroundedZeroPosition = PF.Divide(PF.ScalarMult(plotWidth, PF.Subtract(correctedZero,minP)), PF.Subtract(maxP, minP));
+            var correctedZeroPosition = PF.Round(unroundedZeroPosition);
+            var unroundedPosition = PF.Divide(PF.ScalarMult(plotWidth, PF.Subtract(p, minP)), PF.Subtract(maxP,minP));
+            var position = PF.Round(unroundedPosition);
 
             var mainContent = string.Concat(Enumerable.Repeat(FillChar, position))
                 + string.Concat(Enumerable.Repeat(VoidChar, plotWidth-position));
@@ -47,21 +54,21 @@ namespace DiceExpressions.Model
             return result;
         }
 
-        private static string GetCenteredPlotLine(PType p, PType minP, PType maxP, int plotWidth)
+        private static string GetCenteredPlotLine(R p, R minP, R maxP, int plotWidth)
         {
-            var aboveMax = GenericMath.GreaterThan(GenericMath.Subtract(p,maxP), Delta);
-            var belowMin = GenericMath.GreaterThan(GenericMath.Subtract(minP,p), Delta);
-            var correctedZero = GenericMath<PType>.Zero;
-            correctedZero = GenericMathExtension.Max(correctedZero, minP);
-            correctedZero = GenericMathExtension.Min(correctedZero, maxP);
+            var aboveMax = PF.Compare(PF.Subtract(p,maxP), Delta) > 0;
+            var belowMin = PF.Compare(PF.Subtract(minP,p), Delta) > 0;
+            var correctedZero = PF.Zero();
+            correctedZero = PF.Max(correctedZero, minP);
+            correctedZero = PF.Min(correctedZero, maxP);
 
-            p = GenericMathExtension.Max(p, minP);
-            p = GenericMathExtension.Min(p, maxP);
+            p = PF.Max(p, minP);
+            p = PF.Min(p, maxP);
 
-            var unroundedZeroPosition = GenericMath.Divide(GenericMath.MultiplyAlternative((correctedZero-minP),plotWidth),(maxP-minP));
-            var correctedZeroPosition = GenericMathExtension.Round(unroundedZeroPosition);
-            var unroundedPosition = GenericMath.Divide(GenericMath.MultiplyAlternative((p-minP),plotWidth),(maxP-minP));
-            var position = GenericMathExtension.Round(unroundedPosition);
+            var unroundedZeroPosition = PF.Divide(PF.ScalarMult(plotWidth, PF.Subtract(correctedZero,minP)), PF.Subtract(maxP,minP));
+            var correctedZeroPosition = PF.Round(unroundedZeroPosition);
+            var unroundedPosition = PF.Divide(PF.ScalarMult(plotWidth, PF.Subtract(p,minP)),PF.Subtract(maxP,minP));
+            var position = PF.Round(unroundedPosition);
 
             var relPosition = position-correctedZeroPosition;
             var mainContent = string.Concat(Enumerable.Repeat(FillChar, plotWidth));
@@ -83,27 +90,27 @@ namespace DiceExpressions.Model
                     + SepChar
                     + mainContent.Substring(correctedZeroPosition + 1);
             }
-            var result = belowMin || correctedZero > 0
+            var result = belowMin || PF.Compare(correctedZero, PF.Zero()) > 0
                 ? FillChar
                 : SepChar;
             result += mainContent;
-            result += aboveMax || correctedZero < 0
+            result += aboveMax || PF.Compare(correctedZero, PF.Zero()) < 0
                 ? FillChar
                 : SepChar;
             return result;
         }
 
         public static string GetPlot(
-            Func<T, PType> f,
-            IEnumerable<T> inputs,
+            Func<M, R> f,
+            IEnumerable<M> inputs,
             int plotWidth = 50,
-            PType? minP = null,
-            PType? maxP = null,
+            R? minP = null,
+            R? maxP = null,
             bool asPercentage = false,
             bool centered = true)
         {
-            var setMinP = minP ?? GenericMathExtension.Min(inputs.Select(k => f(k)));
-            var setMaxP = maxP ?? GenericMathExtension.Max(inputs.Select(k => f(k)));
+            var setMinP = minP ?? PF.Min(inputs.Select(k => f(k)));
+            var setMaxP = maxP ?? PF.Max(inputs.Select(k => f(k)));
             var formatString = asPercentage
                 ? "{0:>12}\t{1:>12.2%}\t{2}"
                 : "{0:>12}\t{1:>12}\t{2}";
@@ -127,11 +134,11 @@ namespace DiceExpressions.Model
         }
 
         public static string GetSimplePlot(
-            Func<T, PType> f,
-            IEnumerable<T> inputs,
+            Func<M, R> f,
+            IEnumerable<M> inputs,
             int plotWidth = 50,
-            PType? minP = null,
-            PType? maxP = null,
+            R? minP = null,
+            R? maxP = null,
             bool asPercentage = false,
             bool centered = true)
         {

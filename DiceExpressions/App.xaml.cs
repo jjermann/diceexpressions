@@ -3,7 +3,8 @@ using Avalonia.Markup.Xaml;
 
 namespace DiceExpressions
 {
-    public class App : Application
+    public class App :
+        Application
     {
         public override void Initialize()
         {

@@ -1,11 +1,14 @@
 using System;
 using System.Text.RegularExpressions;
 using System.Linq;
-using DiceExpressions.Model;
+using DiceExpressions.Model.Densities;
+using DiceExpressions.Model.AlgebraicStructureHelper;
+using DiceExpressions.Model.AlgebraicDefaultImplementations;
 
-namespace DiceExpressions.ModelHelpers
+namespace DiceExpressions.Model.Helpers
 {
-    public class DieVisitor : DensityVisitor<int>
+    public class DieVisitor :
+        DensityVisitor<FieldType<int>, int>
     {
         private static Regex _variableMatch;
         static DieVisitor()
@@ -26,7 +29,7 @@ namespace DiceExpressions.ModelHelpers
             return int.Parse(ctx.NUMBER().GetText());
         }
 
-        public override Density<int> VisitVariable(DensityExpressionGrammarParser.VariableContext ctx)
+        public override Density<FieldType<int>, int> VisitVariable(DensityExpressionGrammarParser.VariableContext ctx)
         {
             var variableStr = ctx.VARIABLE().GetText();
 
