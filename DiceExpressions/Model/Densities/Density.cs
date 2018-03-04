@@ -27,7 +27,7 @@ namespace DiceExpressions.Model.Densities
         public G GetAlgebraicStructure() => AlgebraicStructure;
 
         protected IDictionary<M, PType> _densityDict;
-        //TODO: Make this more save, this should not be public
+        // TODO: Make this more save, this should not be public
         public IReadOnlyDictionary<M, PType> ToDictionary()
         {
             return new ReadOnlyDictionary<M, PType>(_densityDict);
@@ -37,6 +37,7 @@ namespace DiceExpressions.Model.Densities
 
         public Density(IDictionary<M, PType> dict, string name = null)
         {
+            // TODO: We should use the equalitycomparer and comparer from the algebraic structure!!!
             _densityDict = dict;
             Name = name ?? DefaultName;
         }
