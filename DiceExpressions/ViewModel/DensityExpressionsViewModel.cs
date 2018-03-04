@@ -11,6 +11,7 @@ using OxyPlot;
 using ReactiveUI;
 using PType = System.Double;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DiceExpressions.ViewModel
 {
@@ -28,11 +29,11 @@ namespace DiceExpressions.ViewModel
 
         public DensityExpressionsViewModel()
         {
+            var thread = Scheduler.CurrentThread;
             this.WhenAnyValue(x => x.DiceExpression)
                 .Throttle(ThrottleTimeSpan)
-                .ObserveOn(UsedScheduler)
-                .Catch(Observable.Return((string)null))
-                .Select(x => ParseDiceExpression(x))
+                .SelectLastAsync(x => ParseDiceExpression(x))
+                .Catch(Observable.Return((DensityExpressionResult<G,M>)null))
                 .ToProperty(this, x => x.ParsedExpression, out _parsedExpression, null);
             this.WhenAnyValue(x => x.ParsedExpression)
                 .Select(x => (x == null) ? "No Expression to parse!" : x.ErrorString)
