@@ -1,34 +1,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using DiceExpressions.Model.AlgebraicStructure;
-using DiceExpressions.Model.AlgebraicStructureHelper;
 using PType = System.Double;
 
 namespace DiceExpressions.Model.Densities
 {
     public static class DensityModuleExtensionMethods
     {
-        public static Density<GP,MP> EmbedTo<G,M,GR,R,GP,MP,GRP,RP>(this Density<G,M> d)
-            where G :
-                IModuleWithExtension<M,GR,R,GP,MP,GRP,RP>,
-                new()
-            where GR :
-                IRing<R>,
-                IEmbedTo<R, RP>,
-                new()
-            where GP :
-                IVectorspace<MP, GRP, RP>,
-                new()
-            where GRP :
-                IField<RP>,
-                new()
+        public static Density<IRealVectorspace<MP,RP>,MP> EmbedTo<M,R,MP,RP>(this Density<IModuleWithExtension<M,R,MP,RP>,M> d)
         {
-            var g = Density<G,M>.AlgebraicStructure;
+            var g = d.BaseStructure;
             var resDict = d.ToDictionary().ToDictionary(
-                x => g.EmbedTo(x.Key),
+                x => g.ModuleEmbedding(x.Key),
                 x => x.Value
             );
-            var resDensity = new Density<GP,MP>(resDict, d.Name);
+            var resDensity = new Density<IRealVectorspace<MP,RP>,MP>(resDict, g.ExtensionVectorspace, d.Name);
             return resDensity;
         }
     }

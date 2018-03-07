@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using DiceExpressions.Model.AlgebraicStructureHelper;
+using PType = System.Double;
 
 namespace DiceExpressions.Model.AlgebraicStructure
 {
@@ -109,19 +109,13 @@ namespace DiceExpressions.Model.AlgebraicStructure
             return res;
         }
 
-        public static M Average<M, GR, R>(this IVectorspace<M, GR, R> v, params M[] source)
-            where GR :
-                IField<R>,
-                new()
+        public static M Average<M, R>(this IVectorspace<M, R> v, params M[] source)
         {
             return v.Average(source.ToList());
         }
-        public static M Average<M, GR, R>(this IVectorspace<M, GR, R> v, IEnumerable<M> source)
-            where GR :
-                IField<R>,
-                new()
+        public static M Average<M, R>(this IVectorspace<M, R> v, IEnumerable<M> source)
         {
-            var r = v.GetBaseRing();
+            var baseField = v.BaseField;
             var sum = v.Zero();
             var count = 0;
             foreach (var value in source)
@@ -129,8 +123,8 @@ namespace DiceExpressions.Model.AlgebraicStructure
                 sum = v.Add(sum, value);
                 count++;
             }
-            var embeddedCount = r.EmbedFrom(count);
-            var scalar = r.Inverse(embeddedCount);
+            var embeddedCount = baseField.EmbedFrom(count);
+            var scalar = baseField.Inverse(embeddedCount);
             return v.ScalarMult(scalar, sum);
         }
 
@@ -232,40 +226,48 @@ namespace DiceExpressions.Model.AlgebraicStructure
 
         //TODO: SumNLargest, SumNSmallest, Abs. But they require both IAdditiveMonoid<M> and also IComparer<M>...
 
-        public static GR GetBaseRing<M, GR, R>(this IModule<M, GR, R> m)
-            where GR :
-                IRing<R>,
-                new()
+
+
+
+        public static Func<R,R> FromRealOp<R>(this IRealField<R> F, Func<PType, PType> f)
         {
-            return new GR();
+            return r => F.EmbedFromReal(f(F.EmbedToReal(r)));
         }
-        public static GRP GetExtendedField<M,GR,R,GP,MP,GRP,RP>(this IModuleWithExtension<M,GR,R,GP,MP,GRP,RP> m)
-            where GR :
-                IRing<R>,
-                IEmbedTo<R, RP>,
-                new()
-            where GP :
-                IVectorspace<MP, GRP, RP>,
-                new()
-            where GRP :
-                IField<RP>,
-                new()
+        public static Func<R,R,R> FromRealBinaryOp<R>(this IRealField<R> F, Func<PType, PType, PType> f)
         {
-            return new GRP();
+            return (r,s) => F.EmbedFromReal(f(F.EmbedToReal(r), F.EmbedToReal(s)));
         }
-        public static GP GetExtendedVectorspace<M,GR,R,GP,MP,GRP,RP>(this IModuleWithExtension<M,GR,R,GP,MP,GRP,RP> m)
-            where GR :
-                IRing<R>,
-                IEmbedTo<R, RP>,
-                new()
-            where GP :
-                IVectorspace<MP, GRP, RP>,
-                new()
-            where GRP :
-                IField<RP>,
-                new()
+        public static Func<PType,PType> ToRealOp<R>(this IRealField<R> F, Func<R, R> f)
         {
-            return new GP();
+            return r => F.EmbedToReal(f(F.EmbedFromReal(r)));
+        }
+        public static Func<PType,PType,PType> ToRealBinaryOp<R>(this IRealField<R> F, Func<R, R, R> f)
+        {
+            return (r,s) => F.EmbedToReal(f(F.EmbedFromReal(r), F.EmbedFromReal(s)));
+        }
+
+        public static R Sqrt<R>(this IRealField<R> F, R r)
+        {
+            var f = F.FromRealOp(Math.Sqrt);
+            return f(r);
+        }
+
+        public static R Abs<R>(this IRealField<R> F, R r)
+        {
+            return F.Compare(r, F.Zero()) >= 0
+                ? r
+                : F.Negate(r);
+        }
+
+        public static R ScalarPow<R>(this IRealField<R> F, R r, R pow)
+        {
+            var f = F.FromRealBinaryOp(Math.Pow);
+            return f(r, pow);
+        }
+
+        public static int Round<R>(this IRealField<R> F, R r)
+        {
+            return (int)Math.Round(F.EmbedToReal(r));
         }
     }
 }

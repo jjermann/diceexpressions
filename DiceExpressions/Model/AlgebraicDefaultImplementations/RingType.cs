@@ -7,8 +7,7 @@ namespace DiceExpressions.Model.AlgebraicDefaultImplementations
 {
     public class RingType<M> :
         GroupType<M>,
-        IRing<M>,
-        IEmbedTo<M, PType>
+        IRing<M>
     {
         virtual public M Multiply(M a, M b)
         {
@@ -17,10 +16,6 @@ namespace DiceExpressions.Model.AlgebraicDefaultImplementations
         virtual public M One()
         {
             return (M)(dynamic)1;
-        }
-        virtual public PType EmbedTo(M r)
-        {
-            return (PType)(dynamic)r;
         }
     }
 }

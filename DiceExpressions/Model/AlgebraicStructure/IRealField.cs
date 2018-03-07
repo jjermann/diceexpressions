@@ -2,13 +2,14 @@ using System.Collections.Generic;
 using DiceExpressions.Model.AlgebraicStructure;
 using PType = System.Double;
 
-namespace DiceExpressions.Model.AlgebraicStructureHelper
+namespace DiceExpressions.Model.AlgebraicStructure
 {
     //TODO: Don't rely on embeddings, get rid of PType except here
-    public interface IProbabilityField<R> :
+    public interface IRealField<R> :
         IField<R>,
         IComparer<R>,
-        IEmbedTo<R, PType>,
-        IEmbedFrom<R, PType>
-    { }
+        IRealEmbedding<R, PType>
+    { 
+        R EmbedFromReal(PType p);
+    }
 }

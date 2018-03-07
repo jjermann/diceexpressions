@@ -3,7 +3,6 @@ using System.Globalization;
 using System.IO;
 using DiceExpressions.Model.AlgebraicDefaultImplementations;
 using DiceExpressions.Model.AlgebraicStructure;
-using DiceExpressions.Model.AlgebraicStructureHelper;
 using DiceExpressions.Model.Helpers;
 using OxyPlot;
 using PType = System.Double;
@@ -14,32 +13,32 @@ namespace DiceExpressions.Model.Densities
     {
         public static string Plot<G,M>(this Density<G,M> d, int plotWidth = 70)
             where G :
-                IEqualityComparer<M>,
-                IComparer<M>,
-                new()
+                IBaseStructure<M>,
+                IComparer<M>
         {
             var pf = Density<G,M>.PField;
             var maxPercentage = pf.Max(d.Values);
-            return AsciiPlotter<M, PFieldType<PType>, PType>.GetPlot(
+            var asciiPlotter = new AsciiPlotter<M, RealFieldType<PType>, PType>(new RealFieldType<PType>());
+            var plotStr = asciiPlotter.GetPlot(
                 k => d[k],
                 d.SortedKeys(),
                 plotWidth:plotWidth,
                 minP:pf.Zero(),
                 maxP:maxPercentage,
                 asPercentage:true);
+            return plotStr;
         }
 
         public static PlotModel OxyPlot<G,M>(this Density<G,M> d, string title = null)
             where G :
-                IEqualityComparer<M>,
+                IBaseStructure<M>,
                 IComparer<M>,
-                IEmbedTo<M, PType>,
-                new()
+                IRealEmbedding<M, PType>
             where M :
                 struct
         {
+            var oxyplotter = new OxyPlotter<G,M,RealFieldType<PType>,PType>(d.BaseStructure, new RealFieldType<PType>());
             var pf = Density<G,M>.PField;
-            var f = 
             title = title ?? d.TrimmedName;
             // TODO: For Expected() and Stdev() much more assumptions are necessary!
             // var subtitle = string.Format(
@@ -49,7 +48,7 @@ namespace DiceExpressions.Model.Densities
             //     d.Stdev()
             // );
             var subtitle = "";
-            var plotModel = OxyPlotter<G, M, PFieldType<PType>, PType>.GetPlot(
+            var plotModel = oxyplotter.GetPlot(
                 k => d[k],
                 d.SortedKeys(),
                 title: title,
@@ -61,10 +60,9 @@ namespace DiceExpressions.Model.Densities
 
         public static string GetOxyPlotSvg<G,M>(this Density<G,M> d, string title)
             where G :
-                IEqualityComparer<M>,
+                IBaseStructure<M>,
                 IComparer<M>,
-                IEmbedTo<M, PType>,
-                new()
+                IRealEmbedding<M, PType>
             where M :
                 struct
         {
@@ -76,10 +74,9 @@ namespace DiceExpressions.Model.Densities
 
         public static void SaveOxyPlotPdf<G,M>(this Density<G,M> d, string filename = null)
             where G :
-                IEqualityComparer<M>,
+                IBaseStructure<M>,
                 IComparer<M>,
-                IEmbedTo<M, PType>,
-                new()
+                IRealEmbedding<M, PType>
             where M :
                 struct
         {

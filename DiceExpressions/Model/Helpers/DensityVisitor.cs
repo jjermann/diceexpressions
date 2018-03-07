@@ -12,8 +12,7 @@ namespace DiceExpressions.Model.Helpers
         where G :
             IAdditiveGroup<M>,
             IMultiplicativeGroup<M>,
-            IComparer<M>,
-            new()
+            IComparer<M>
     {
         virtual public DensityExpressionResult<G,M> VisitCompileUnit(DensityExpressionGrammarParser.CompileUnitContext ctx)
         {
@@ -163,8 +162,7 @@ namespace DiceExpressions.Model.Helpers
             Density<G,M> density;
             if (isNumber)
             {
-                var num = VisitNumber(ctx.number());
-                density = new Constant<G,M>(num);
+                density = VisitNumber(ctx.number());
             } else if (isVariable)
             {
                 var vDensity = VisitVariable(ctx.variable());
@@ -182,7 +180,7 @@ namespace DiceExpressions.Model.Helpers
             return density;
         }
 
-        abstract public M VisitNumber(DensityExpressionGrammarParser.NumberContext ctx);
+        abstract public Density<G,M> VisitNumber(DensityExpressionGrammarParser.NumberContext ctx);
 
         abstract public Density<G,M> VisitVariable(DensityExpressionGrammarParser.VariableContext ctx);
 

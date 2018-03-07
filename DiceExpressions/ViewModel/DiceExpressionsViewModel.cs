@@ -1,6 +1,5 @@
 using System.Reactive.Linq;
 using DiceExpressions.Model.AlgebraicDefaultImplementations;
-using DiceExpressions.Model.AlgebraicStructureHelper;
 using DiceExpressions.Model.Densities;
 using DiceExpressions.Model.Helpers;
 using DiceExpressions.ViewModels;

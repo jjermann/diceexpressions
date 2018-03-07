@@ -1,12 +1,10 @@
 namespace DiceExpressions.Model.AlgebraicStructure
 {
     //Commutative Module
-    public interface IModule<M, GR, R> :
+    public interface IModule<M, R> :
         IAdditiveAbelianGroup<M>
-        where GR :
-            IRing<R>,
-            new()
-    { 
+    {
+        IRing<R> BaseRing { get; }
         M ScalarMult(R r, M m);
     }
 }

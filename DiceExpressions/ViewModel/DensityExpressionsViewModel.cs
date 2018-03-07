@@ -5,7 +5,6 @@ using System.Reactive.Linq;
 using DiceExpressions.Model.Densities;
 using DiceExpressions.Model.Helpers;
 using DiceExpressions.Model.AlgebraicStructure;
-using DiceExpressions.Model.AlgebraicStructureHelper;
 using DiceExpressions.ViewModels;
 using OxyPlot;
 using ReactiveUI;
@@ -18,10 +17,9 @@ namespace DiceExpressions.ViewModel
     public abstract class DensityExpressionsViewModel<G, M> :
         ViewModelBase
         where G :
-            IEqualityComparer<M>,
+            IBaseStructure<M>,
             IComparer<M>,
-            IEmbedTo<M, PType>,
-            new()
+            IRealEmbedding<M, PType>
         where M : struct
     {
         protected static readonly TimeSpan ThrottleTimeSpan = TimeSpan.FromMilliseconds(100);

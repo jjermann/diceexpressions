@@ -1,21 +1,13 @@
 ﻿using DiceExpressions.Model.AlgebraicStructure;
-using DiceExpressions.Model.AlgebraicStructureHelper;
 
 namespace DiceExpressions.Model.AlgebraicStructure
 {
-    //To allow mapping from a given IModule<R, M> to GP = IVectorspace<RP, MP>
-    public interface IModuleWithExtension<M, GR, R, GP, MP, GRP, RP> :
-        IModule<M, GR, R>,
-        IEmbedTo<M, MP>
-        where GR :
-            IRing<R>,
-            IEmbedTo<R, RP>,
-            new()
-        where GP :
-            IVectorspace<MP, GRP, RP>,
-            new()
-        where GRP :
-            IField<RP>,
-            new()
-    { }
+    //To allow mapping from a given IModule<M, R> to IProbabilityVectorspace<MP, RP>
+    public interface IModuleWithExtension<M, R, MP, RP> :
+        IModule<M, R>
+    {
+        MP ModuleEmbedding(M m);
+        RP RingEmbedding(R r);
+        IRealVectorspace<MP, RP> ExtensionVectorspace { get; }
+    }
 }

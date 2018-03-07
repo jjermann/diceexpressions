@@ -2,7 +2,6 @@ using System;
 using Antlr4.Runtime;
 using DiceExpressions.Model;
 using DiceExpressions.Model.AlgebraicDefaultImplementations;
-using DiceExpressions.Model.AlgebraicStructureHelper;
 
 namespace DiceExpressions.Model.Helpers
 {

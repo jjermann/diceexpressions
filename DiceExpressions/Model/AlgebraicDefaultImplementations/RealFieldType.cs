@@ -1,14 +1,13 @@
 using DiceExpressions.Model.AlgebraicStructure;
-using DiceExpressions.Model.AlgebraicStructureHelper;
 using PType = System.Double;
 
 namespace DiceExpressions.Model.AlgebraicDefaultImplementations
 {
-    public class PFieldType<R> :
+    public class RealFieldType<R> :
         FieldType<R>,
-        IProbabilityField<R>
+        IRealField<R>
     {
-        virtual public R EmbedFrom(PType p)
+        virtual public R EmbedFromReal(PType p)
         {
             return (R)(dynamic)p;
         }

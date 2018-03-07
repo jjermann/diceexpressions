@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using DiceExpressions.Model.AlgebraicDefaultImplementations;
 using DiceExpressions.Model.AlgebraicStructure;
-using DiceExpressions.Model.AlgebraicStructureHelper;
 using PType = System.Double;
 
 namespace DiceExpressions.Model.Densities
@@ -11,15 +10,12 @@ namespace DiceExpressions.Model.Densities
     public class UniformDensity<M> :
         UniformDensity<FieldType<M>, M>
     {
-        public UniformDensity(params M[] keys) : base(keys) { }
+        public UniformDensity(params M[] keys) : base(new FieldType<M>(), keys) { }
     }
     public class UniformDensity<G, M> :
         Density<G, M>
-        where G :
-            IEqualityComparer<M>,
-            new()
     {
-        public UniformDensity(params M[] keys) : base(GetUniformDensityDict(keys), "UniformDensity") { }
+        public UniformDensity(G baseStructure, params M[] keys) : base(GetUniformDensityDict(keys), baseStructure, "UniformDensity") { }
 
         protected static IDictionary<M, PType> GetUniformDensityDict(params M[] keys)
         {
@@ -38,7 +34,7 @@ namespace DiceExpressions.Model.Densities
     public class Constant<M> :
         Constant<FieldType<M>, M>
     {
-        public Constant(M v) : base(v) { }
+        public Constant(M v) : base(new FieldType<M>(), v) { }
         public static implicit operator Constant<M>(M t)
         {
             return new Constant<M>(t);
@@ -46,13 +42,10 @@ namespace DiceExpressions.Model.Densities
     }
     public class Constant<G, M> :
         UniformDensity<G, M>
-        where G :
-            IEqualityComparer<M>,
-            new()
     {
         public M Key => Keys.Single();
 
-        public Constant(M v) : base(v)
+        public Constant(G baseStructure, M v) : base(baseStructure, v)
         {
             Name = $"{v}";
         }
@@ -61,29 +54,27 @@ namespace DiceExpressions.Model.Densities
     public class Zero<M> :
         Zero<FieldType<M>, M>
     {
-        public Zero() : base() { }
+        public Zero() : base(new FieldType<M>()) { }
     }
     public class Zero<G, M> :
         Constant<G, M>
         where G :
-            IAdditiveMonoid<M>,
-            new()
+            IAdditiveMonoid<M>
     {
-        public Zero() : base(AlgebraicStructure.Zero()) { }
+        public Zero(G baseStructure) : base(baseStructure, baseStructure.Zero()) { }
     }
 
     public class One<M> :
         One<FieldType<M>, M>
     {
-        public One() : base() { }
+        public One() : base(new FieldType<M>()) { }
     }
     public class One<G, M> :
         Constant<G, M>
         where G :
-            IMultiplicativeMonoid<M>,
-            new()
+            IMultiplicativeMonoid<M>
     {
-        public One() : base(AlgebraicStructure.One()) { }
+        public One(G baseStructure) : base(baseStructure, baseStructure.One()) { }
     }
 
     public class Die :

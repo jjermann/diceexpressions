@@ -5,7 +5,7 @@ namespace DiceExpressions.Model.AlgebraicDefaultImplementations
 {
     public class GroupType<M> :
         IAdditiveAbelianGroup<M>,
-        IEqualityComparer<M>,
+        IBaseStructure<M>,
         IComparer<M>
     {
         private static readonly IEqualityComparer<M> _equalityComparer = EqualityComparer<M>.Default;

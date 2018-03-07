@@ -2,7 +2,6 @@ using System;
 using System.Text.RegularExpressions;
 using System.Linq;
 using DiceExpressions.Model.Densities;
-using DiceExpressions.Model.AlgebraicStructureHelper;
 using DiceExpressions.Model.AlgebraicDefaultImplementations;
 
 namespace DiceExpressions.Model.Helpers
@@ -24,9 +23,11 @@ namespace DiceExpressions.Model.Helpers
             _variableMatch = new Regex(regexMatch, RegexOptions.Singleline);
         }
 
-        public override int VisitNumber(DensityExpressionGrammarParser.NumberContext ctx)
+        public override Density<FieldType<int>,int> VisitNumber(DensityExpressionGrammarParser.NumberContext ctx)
         {
-            return int.Parse(ctx.NUMBER().GetText());
+            var num = int.Parse(ctx.NUMBER().GetText());
+            var density = new Constant<int>(num);
+            return density;
         }
 
         public override Density<FieldType<int>, int> VisitVariable(DensityExpressionGrammarParser.VariableContext ctx)

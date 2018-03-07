@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using DiceExpressions.Model.AlgebraicDefaultImplementations;
 using DiceExpressions.Model.AlgebraicStructure;
-using DiceExpressions.Model.AlgebraicStructureHelper;
 using PType = System.Double;
 
 namespace DiceExpressions.Model.Densities
@@ -20,8 +19,7 @@ namespace DiceExpressions.Model.Densities
     public class MultiDensity<G, M> :
         Density<G, M>
         where G :
-            IAdditiveMonoid<M>,
-            new()
+            IAdditiveMonoid<M>
     {
         public IList<Density<G, M>> DensityList { get; private set; }
 
@@ -38,21 +36,23 @@ namespace DiceExpressions.Model.Densities
         }
 
         public Density<S,N> MultiOp<S,N>(
+            S newBaseStructure,
             Func<IEnumerable<M>,N> multiOp, 
             Func<IEnumerable<string>,string> multiOpStrFunc = null)
             where S :
-                IEqualityComparer<N>,
-                new()
+                IBaseStructure<N>
         {
-            return Density<G,M>.MultiOp<S,N>(DensityList, multiOp, multiOpStrFunc);
+            return Density<G,M>.MultiOp<S,N>(newBaseStructure, DensityList, multiOp, multiOpStrFunc);
         }
 
         protected static Density<G, M> GetSummedMultiDensity(IList<Density<G, M>> dList)
         {
-            var g = Density<G, M>.AlgebraicStructure;
-            var summedDensity = dList.Any()
-                ? dList.First()
-                : new Zero<G, M>();
+            if (!dList.Any())
+            {
+                throw new NotImplementedException();
+            }
+            var summedDensity = dList.First();
+            var g = summedDensity.BaseStructure;
             foreach (var density in dList.Skip(1)) {
                 summedDensity = summedDensity.Add(density);
             }

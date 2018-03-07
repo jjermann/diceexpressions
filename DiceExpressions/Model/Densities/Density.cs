@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using DiceExpressions.Model.AlgebraicDefaultImplementations;
 using DiceExpressions.Model.AlgebraicStructure;
-using DiceExpressions.Model.AlgebraicStructureHelper;
 using PType = System.Double;
 
 namespace DiceExpressions.Model.Densities
@@ -13,18 +12,13 @@ namespace DiceExpressions.Model.Densities
         Density<FieldType<M>, M>
     {
         public Density(Density<M> density) : base(density) { }
-        public Density(IDictionary<M, PType> dict, string name = null) : base(dict, name) { }
+        public Density(IDictionary<M, PType> dict, string name = null) : base(dict, new FieldType<M>(), name) { }
     }
 
-    public class Density<G, M> :
-        IEquatable<Density<G, M>>
-        where G :
-            IEqualityComparer<M>,
-            new()
+    public class Density<G, M>
     {
-        public static readonly G AlgebraicStructure = new G();
-        public static readonly PFieldType<PType> PField = new PFieldType<PType>(); 
-        public G GetAlgebraicStructure() => AlgebraicStructure;
+        public G BaseStructure { get; }
+        public static readonly RealFieldType<PType> PField = new RealFieldType<PType>(); 
 
         protected IDictionary<M, PType> _densityDict;
         // TODO: Make this more save, this should not be public
@@ -33,10 +27,11 @@ namespace DiceExpressions.Model.Densities
             return new ReadOnlyDictionary<M, PType>(_densityDict);
         }
 
-        public Density(Density<G, M> density) : this(density._densityDict, density.Name) { }
+        public Density(Density<G, M> density) : this(density._densityDict, density.BaseStructure, density.Name) { }
 
-        public Density(IDictionary<M, PType> dict, string name = null)
+        public Density(IDictionary<M, PType> dict, G baseStructure, string name = null)
         {
+            BaseStructure = baseStructure;
             // TODO: We should use the equalitycomparer and comparer from the algebraic structure!!!
             _densityDict = dict;
             Name = name ?? DefaultName;
@@ -48,7 +43,7 @@ namespace DiceExpressions.Model.Densities
             this.Name = name;
                
         }
-                public string Name { get; set; }
+        public string Name { get; set; }
         public string TrimmedName {
             get {
                 var trimmedName = Name;
@@ -128,17 +123,15 @@ namespace DiceExpressions.Model.Densities
         }
 
         virtual public Density<S, N> Op<S, N>(
+            S newBaseStructure,
             Func<M, N> op,
             Func<string, string> opStrFunc = null)
-            where S :
-                IEqualityComparer<N>,
-                new()
         {
             var resDensity = GetOpDictionary(this, op);
             var name = opStrFunc == null
                 ? DefaultName
                 : opStrFunc(Name);
-            return new Density<S, N>(resDensity, name);
+            return new Density<S, N>(resDensity, newBaseStructure, name);
         }
 
         protected static IDictionary<N, PType> GetBinaryOpDictionary<N>(
@@ -163,19 +156,19 @@ namespace DiceExpressions.Model.Densities
         }
 
         public static Density<S, N> BinaryOp<S, N>(
+            S newBaseStructure,
             Density<G, M> d1,
             Density<G, M> d2,
             Func<M, M, N> op, 
             Func<string,string,string> binOpStrFunc = null)
             where S :
-                IEqualityComparer<N>,
-                new()
+                IBaseStructure<N>
         {
             var resDensity = GetBinaryOpDictionary(d1, d2, op);
             var name = binOpStrFunc == null
                 ? DefaultName
                 : binOpStrFunc(d1.Name, d2.Name);
-            return new Density<S, N>(resDensity, name);
+            return new Density<S, N>(resDensity, newBaseStructure, name);
         }
 
         private static IEnumerable<IEnumerable<N>> CartesianProduct<N>(IEnumerable<IEnumerable<N>> sequences)
@@ -214,18 +207,18 @@ namespace DiceExpressions.Model.Densities
         }
 
         public static Density<S, N> MultiOp<S, N>(
+            S newBaseStructure,
             IEnumerable<Density<G, M>> densityList,
             Func<IEnumerable<M>,N> multiOp,
             Func<IEnumerable<string>,string> multiOpStrFunc = null)
             where S :
-                IEqualityComparer<N>,
-                new()
+                IBaseStructure<N>
         {
             var resDensity = GetMultiOpDictionary(densityList, multiOp);
             var name = multiOpStrFunc != null
                 ? multiOpStrFunc(densityList.Select(d => d.Name))
                 : DefaultName;
-            return new Density<S, N>(resDensity, name);
+            return new Density<S, N>(resDensity, newBaseStructure, name);
         }
 
         public PType Prob(Func<M, bool> cond)
@@ -280,7 +273,7 @@ namespace DiceExpressions.Model.Densities
             var name = condStrFunc != null
                 ? condStrFunc(Name)
                 : DefaultName;
-            var newDensity = new Density<G, M>(resDict, name);
+            var newDensity = new Density<G, M>(resDict, BaseStructure, name);
             return newDensity;
         }
 

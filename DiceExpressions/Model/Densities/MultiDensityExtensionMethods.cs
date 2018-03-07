@@ -12,10 +12,9 @@ namespace DiceExpressions.Model.Densities
         public static Density<G,M> KeepHighest<G,M>(this MultiDensity<G,M> d, int n = 1)
             where G :
                 IAdditiveMonoid<M>,
-                IComparer<M>,
-                new()
+                IComparer<M>
         {
-            var g = Density<G,M>.AlgebraicStructure;
+            var g = d.BaseStructure;
             if (n<0)
             {
                 return d.KeepLowest(-n);
@@ -23,14 +22,14 @@ namespace DiceExpressions.Model.Densities
             Density<G,M> resDensity;
             if (n == 0)
             {
-                resDensity = new Zero<G,M>();
+                resDensity = new Zero<G,M>(g);
             } else if (n == 1)
             {
-                resDensity = d.MultiOp<G,M>(en => g.Max(en));
+                resDensity = d.MultiOp<G,M>(g, en => g.Max(en));
                 resDensity.Name = d.Name + $".KeepHighest({n})";
             } else
             {
-                resDensity = d.MultiOp<G,M>(en => SumNLargest<G,M>(en, n));
+                resDensity = d.MultiOp<G,M>(g, en => SumNLargest<G,M>(g, en, n));
                 resDensity.Name = d.Name + $".KeepHighest({n})";
             }
             return resDensity;
@@ -39,10 +38,9 @@ namespace DiceExpressions.Model.Densities
         public static Density<G,M> KeepLowest<G,M>(this MultiDensity<G,M> d, int n = 1)
             where G :
                 IAdditiveMonoid<M>,
-                IComparer<M>,
-                new()
+                IComparer<M>
         {
-            var g = Density<G,M>.AlgebraicStructure;
+            var g = d.BaseStructure;
             if (n<0)
             {
                 return d.KeepHighest(-n);
@@ -50,14 +48,14 @@ namespace DiceExpressions.Model.Densities
             Density<G,M> resDensity;
             if (n == 0)
             {
-                resDensity = new Zero<G,M>();
+                resDensity = new Zero<G,M>(g);
             } else if (n == 1)
             {
-                resDensity = d.MultiOp<G,M>(en => g.Min(en));
+                resDensity = d.MultiOp<G,M>(g, en => g.Min(en));
                 resDensity.Name = d.Name + $".KeepLowest({n})";
             } else
             {
-                resDensity = d.MultiOp<G,M>(en => SumNSmallest<G,M>(en, n));
+                resDensity = d.MultiOp<G,M>(g, en => SumNSmallest<G,M>(g, en, n));
                 resDensity.Name = d.Name + $".KeepLowest({n})";
             }
             return resDensity;
@@ -66,10 +64,9 @@ namespace DiceExpressions.Model.Densities
         public static Density<G,M> DropHighest<G,M>(this MultiDensity<G,M> d, int n = 1)
             where G :
                 IAdditiveMonoid<M>,
-                IComparer<M>,
-                new()
+                IComparer<M>
         {
-            var g = Density<G,M>.AlgebraicStructure;
+            var g = d.BaseStructure;
             var remaining = Math.Min(0, d.DensityList.Count() - n);
             if (n<0)
             {
@@ -78,14 +75,14 @@ namespace DiceExpressions.Model.Densities
             Density<G,M> resDensity;
             if (remaining == 0)
             {
-                resDensity = new Zero<G,M>();
+                resDensity = new Zero<G,M>(g);
             } else if (n == 0)
             {
                 resDensity = d.AsSummedDensity();
                 resDensity.Name = d.Name + $".DropHighest({n})";
             } else
             {
-                resDensity = d.MultiOp<G,M>(en => SumNSmallest<G,M>(en, remaining));
+                resDensity = d.MultiOp<G,M>(g, en => SumNSmallest<G,M>(g, en, remaining));
                 resDensity.Name = d.Name + $".DropHighest({n})";
             }
             return resDensity;
@@ -94,10 +91,9 @@ namespace DiceExpressions.Model.Densities
         public static Density<G,M> DropLowest<G,M>(this MultiDensity<G,M> d, int n = 1)
             where G :
                 IAdditiveMonoid<M>,
-                IComparer<M>,
-                new()
+                IComparer<M>
         {
-            var g = Density<G,M>.AlgebraicStructure;
+            var g = d.BaseStructure;
             var remaining = Math.Min(0, d.DensityList.Count() - n);
             if (n<0)
             {
@@ -106,14 +102,14 @@ namespace DiceExpressions.Model.Densities
             Density<G,M> resDensity;
             if (remaining == 0)
             {
-                resDensity = new Zero<G,M>();
+                resDensity = new Zero<G,M>(g);
             } else if (n == 0)
             {
                 resDensity = d.AsSummedDensity();
                 resDensity.Name = d.Name + $".DropLowest({n})";
             } else
             {
-                resDensity = d.MultiOp<G,M>(en => SumNLargest<G,M>(en, remaining));
+                resDensity = d.MultiOp<G,M>(g,en => SumNLargest<G,M>(g, en, remaining));
                 resDensity.Name = d.Name + $".DropLowest({n})";
             }
             return resDensity;
@@ -121,26 +117,22 @@ namespace DiceExpressions.Model.Densities
 
         //TODO: These should be part of AlgebraicExtensionMethods!
         //TODO: It's not proper to use Density<G,M>.AlgebraicStructure here but we want to avoid multiple calls of new()
-        private static M SumNLargest<G,M>(IEnumerable<M> source, int n)
+        private static M SumNLargest<G,M>(G baseStructure, IEnumerable<M> source, int n)
             where G :
                 IAdditiveMonoid<M>,
-                IComparer<M>,
-                new()
+                IComparer<M>
         {
-            var g = Density<G,M>.AlgebraicStructure;
-            var nlargest = g.GetNLargest(source, n);
-            return g.Sum(nlargest);
+            var nlargest = baseStructure.GetNLargest(source, n);
+            return baseStructure.Sum(nlargest);
         }
 
-       private static M SumNSmallest<G,M>(IEnumerable<M> source, int n)
+       private static M SumNSmallest<G,M>(G baseStructure, IEnumerable<M> source, int n)
             where G :
                 IAdditiveMonoid<M>,
-                IComparer<M>,
-                new()
+                IComparer<M>
         {
-            var g = Density<G,M>.AlgebraicStructure;
-            var nsmallest = g.GetNSmallest(source, n);
-            return g.Sum(nsmallest);
+            var nsmallest = baseStructure.GetNSmallest(source, n);
+            return baseStructure.Sum(nsmallest);
         }
     }
 }

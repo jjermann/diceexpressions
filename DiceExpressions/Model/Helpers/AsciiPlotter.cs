@@ -2,39 +2,41 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using DiceExpressions.Model.AlgebraicStructure;
-using DiceExpressions.Model.AlgebraicStructureHelper;
 
 namespace DiceExpressions.Model.Helpers
 {
     //TODO: For now we assume that R is a struct to be able to use R?
-    public static class AsciiPlotter<M, F, R>
+    public class AsciiPlotter<M, F, R>
         where F :
-            IProbabilityField<R>,
-            new()
+            IRealField<R>
         where R :
             struct
     {
-        private static readonly F PF = new F();
-        private static R Delta => PF.EmbedFrom(1e-9);
-        private static string FillChar => "█";
-        private static string SepChar => "│";
-        private static string VoidChar => " ";
-
-        private static string GetPlotLine(R p, R minP, R maxP, int plotWidth)
+        public F BaseRealField { get; }
+        public AsciiPlotter(F field)
         {
-            var aboveMax = PF.Compare(PF.Subtract(p,maxP), Delta) > 0;
-            var belowMin = PF.Compare(PF.Subtract(minP,p), Delta) > 0;
-            var correctedZero = PF.Zero();
-            correctedZero = PF.Max(correctedZero, minP);
-            correctedZero = PF.Min(correctedZero, maxP);
+            BaseRealField = field;
+        }
+        private R Delta => BaseRealField.EmbedFromReal(1e-9);
+        private string FillChar => "█";
+        private string SepChar => "│";
+        private string VoidChar => " ";
 
-            p = PF.Max(p, minP);
-            p = PF.Min(p, maxP);
+        private string GetPlotLine(R p, R minP, R maxP, int plotWidth)
+        {
+            var aboveMax = BaseRealField.Compare(BaseRealField.Subtract(p,maxP), Delta) > 0;
+            var belowMin = BaseRealField.Compare(BaseRealField.Subtract(minP,p), Delta) > 0;
+            var correctedZero = BaseRealField.Zero();
+            correctedZero = BaseRealField.Max(correctedZero, minP);
+            correctedZero = BaseRealField.Min(correctedZero, maxP);
 
-            var unroundedZeroPosition = PF.Divide(PF.ScalarMult(plotWidth, PF.Subtract(correctedZero,minP)), PF.Subtract(maxP, minP));
-            var correctedZeroPosition = PF.Round(unroundedZeroPosition);
-            var unroundedPosition = PF.Divide(PF.ScalarMult(plotWidth, PF.Subtract(p, minP)), PF.Subtract(maxP,minP));
-            var position = PF.Round(unroundedPosition);
+            p = BaseRealField.Max(p, minP);
+            p = BaseRealField.Min(p, maxP);
+
+            var unroundedZeroPosition = BaseRealField.Divide(BaseRealField.ScalarMult(plotWidth, BaseRealField.Subtract(correctedZero,minP)), BaseRealField.Subtract(maxP, minP));
+            var correctedZeroPosition = BaseRealField.Round(unroundedZeroPosition);
+            var unroundedPosition = BaseRealField.Divide(BaseRealField.ScalarMult(plotWidth, BaseRealField.Subtract(p, minP)), BaseRealField.Subtract(maxP,minP));
+            var position = BaseRealField.Round(unroundedPosition);
 
             var mainContent = string.Concat(Enumerable.Repeat(FillChar, position))
                 + string.Concat(Enumerable.Repeat(VoidChar, plotWidth-position));
@@ -54,21 +56,21 @@ namespace DiceExpressions.Model.Helpers
             return result;
         }
 
-        private static string GetCenteredPlotLine(R p, R minP, R maxP, int plotWidth)
+        private string GetCenteredPlotLine(R p, R minP, R maxP, int plotWidth)
         {
-            var aboveMax = PF.Compare(PF.Subtract(p,maxP), Delta) > 0;
-            var belowMin = PF.Compare(PF.Subtract(minP,p), Delta) > 0;
-            var correctedZero = PF.Zero();
-            correctedZero = PF.Max(correctedZero, minP);
-            correctedZero = PF.Min(correctedZero, maxP);
+            var aboveMax = BaseRealField.Compare(BaseRealField.Subtract(p,maxP), Delta) > 0;
+            var belowMin = BaseRealField.Compare(BaseRealField.Subtract(minP,p), Delta) > 0;
+            var correctedZero = BaseRealField.Zero();
+            correctedZero = BaseRealField.Max(correctedZero, minP);
+            correctedZero = BaseRealField.Min(correctedZero, maxP);
 
-            p = PF.Max(p, minP);
-            p = PF.Min(p, maxP);
+            p = BaseRealField.Max(p, minP);
+            p = BaseRealField.Min(p, maxP);
 
-            var unroundedZeroPosition = PF.Divide(PF.ScalarMult(plotWidth, PF.Subtract(correctedZero,minP)), PF.Subtract(maxP,minP));
-            var correctedZeroPosition = PF.Round(unroundedZeroPosition);
-            var unroundedPosition = PF.Divide(PF.ScalarMult(plotWidth, PF.Subtract(p,minP)),PF.Subtract(maxP,minP));
-            var position = PF.Round(unroundedPosition);
+            var unroundedZeroPosition = BaseRealField.Divide(BaseRealField.ScalarMult(plotWidth, BaseRealField.Subtract(correctedZero,minP)), BaseRealField.Subtract(maxP,minP));
+            var correctedZeroPosition = BaseRealField.Round(unroundedZeroPosition);
+            var unroundedPosition = BaseRealField.Divide(BaseRealField.ScalarMult(plotWidth, BaseRealField.Subtract(p,minP)),BaseRealField.Subtract(maxP,minP));
+            var position = BaseRealField.Round(unroundedPosition);
 
             var relPosition = position-correctedZeroPosition;
             var mainContent = string.Concat(Enumerable.Repeat(FillChar, plotWidth));
@@ -90,17 +92,17 @@ namespace DiceExpressions.Model.Helpers
                     + SepChar
                     + mainContent.Substring(correctedZeroPosition + 1);
             }
-            var result = belowMin || PF.Compare(correctedZero, PF.Zero()) > 0
+            var result = belowMin || BaseRealField.Compare(correctedZero, BaseRealField.Zero()) > 0
                 ? FillChar
                 : SepChar;
             result += mainContent;
-            result += aboveMax || PF.Compare(correctedZero, PF.Zero()) < 0
+            result += aboveMax || BaseRealField.Compare(correctedZero, BaseRealField.Zero()) < 0
                 ? FillChar
                 : SepChar;
             return result;
         }
 
-        public static string GetPlot(
+        public string GetPlot(
             Func<M, R> f,
             IEnumerable<M> inputs,
             int plotWidth = 50,
@@ -109,8 +111,8 @@ namespace DiceExpressions.Model.Helpers
             bool asPercentage = false,
             bool centered = true)
         {
-            var setMinP = minP ?? PF.Min(inputs.Select(k => f(k)));
-            var setMaxP = maxP ?? PF.Max(inputs.Select(k => f(k)));
+            var setMinP = minP ?? BaseRealField.Min(inputs.Select(k => f(k)));
+            var setMaxP = maxP ?? BaseRealField.Max(inputs.Select(k => f(k)));
             var formatString = asPercentage
                 ? "{0:>12}\t{1:>12.2%}\t{2}"
                 : "{0:>12}\t{1:>12}\t{2}";
@@ -133,7 +135,7 @@ namespace DiceExpressions.Model.Helpers
             //     ), inputs)))
         }
 
-        public static string GetSimplePlot(
+        public string GetSimplePlot(
             Func<M, R> f,
             IEnumerable<M> inputs,
             int plotWidth = 50,
