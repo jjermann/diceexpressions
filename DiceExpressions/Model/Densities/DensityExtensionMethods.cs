@@ -187,20 +187,6 @@ namespace DiceExpressions.Model.Densities
             return newDensity;
         }
 
-        // // TODO Add IEnumerable interface to Density?
-        // public static IEnumerator<KeyValuePair<M,PType>> GetEnumerator<G,M>(this Density<G,M> d)
-        //     where G :
-        //         IBaseStructure<M>,
-        //         IComparer<M>
-        // { }
-        // public static IEnumerator IEnumerable.GetEnumerator<G,M>(this Density<G,M> d)
-        //     where G :
-        //         IBaseStructure<M>,
-        //         IComparer<M>
-        // {
-        //     return d.GetEnumerator();
-        // }
-
         public static MP Expected<MP,RP>(this IDensity<IRealVectorspace<MP,RP>,MP> d)
         {
             var gp = d.BaseStructure;
