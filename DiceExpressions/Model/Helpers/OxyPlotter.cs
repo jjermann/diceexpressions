@@ -10,20 +10,20 @@ using OxyPlot.Series;
 namespace DiceExpressions.Model.Helpers
 {
     //TODO: For now we assume that M, R are structs to be able to use default nullables
-    public class OxyPlotter<G, M, F, R>
+    public class OxyPlotter<G, M, GRF, RF>
         where G :
             IBaseStructure<M>,
-            IRealEmbedding<M>
-        where F :
-            IRealField<R>
+            IRealEmbedding<M,RF>
+        where GRF :
+            IRealField<RF>
         where M :
             struct
-        where R :
+        where RF :
             struct
     {
-        public F BaseRealField { get; }
+        public GRF BaseRealField { get; }
         public G BaseStructure { get; }
-        public OxyPlotter(G baseStructure, F field)
+        public OxyPlotter(G baseStructure, GRF field)
         {
             BaseRealField = field;
             BaseStructure = baseStructure;
@@ -36,16 +36,16 @@ namespace DiceExpressions.Model.Helpers
         // private static M EmbedFromDouble(double r) => AlgebraicStructure.EmbedFrom(PField.EmbedFrom(r));
 
         public PlotModel GetPlot(
-            Func<M, R> f,
+            Func<M, RF> f,
             IEnumerable<M> inputs,
             string title = "Plot",
             string subtitle = null,
             M? xMin = null,
             M? xMax = null,
-            R? yMin = null,
-            R? yMax = null,
+            RF? yMin = null,
+            RF? yMax = null,
             Func<double, string> keyLabelFormatter = null,
-            Func<R, string> valueLabelFormatter = null,
+            Func<RF, string> valueLabelFormatter = null,
             bool withMarkers = true)
         {
             var inputList = inputs.ToList();
@@ -72,8 +72,8 @@ namespace DiceExpressions.Model.Helpers
             var xAxis = new LinearAxis
             {
                 Position = AxisPosition.Bottom,
-                Minimum = BaseStructure.EmbedToReal(xMinFinal),
-                Maximum = BaseStructure.EmbedToReal(xMaxFinal)
+                Minimum = BaseRealField.EmbedToReal(BaseStructure.EmbedToReal(xMinFinal)),
+                Maximum = BaseRealField.EmbedToReal(BaseStructure.EmbedToReal(xMaxFinal))
                 // AxislineColor = OxyColors.Black
             };
             if (keyLabelFormatter != null)
@@ -115,7 +115,7 @@ namespace DiceExpressions.Model.Helpers
             {
                 lineseries.Points.Add(
                     new DataPoint(
-                        BaseStructure.EmbedToReal(key),
+                        BaseRealField.EmbedToReal(BaseStructure.EmbedToReal(key)),
                         BaseRealField.EmbedToReal(f(key))
                     ));
             }

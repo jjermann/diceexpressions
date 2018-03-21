@@ -1,26 +1,25 @@
 using DiceExpressions.Model.AlgebraicStructure;
-using PType = System.Double;
 
 namespace DiceExpressions.Model.AlgebraicDefaultImplementations
 {
-    public class RealVectorspaceType<M> :
+    public class RealVectorspaceType<M,RF> :
         GroupType<M>,
-        IRealVectorspace<M, PType>
+        IRealVectorspace<M, RF>
     {
-        private static readonly IRealField<PType> _baseField = new RealFieldType<PType>();
-        public IField<PType> BaseField => _baseField;
+        private static readonly IRealField<RF> _baseField = new RealFieldType<RF>();
+        public IField<RF> BaseField => _baseField;
 
-        public IRing<PType> BaseRing => _baseField;
+        public IRing<RF> BaseRing => _baseField;
 
-        public IRealField<PType> BaseRealField => _baseField;
+        public IRealField<RF> BaseRealField => _baseField;
 
-        // We provide a default implementation for Norm that just tries to cast to PType first...
-        public PType Norm(M a)
+        // We provide a default implementation for Norm that just tries to cast to RF first...
+        public RF Norm(M a)
         {
-            return _baseField.Abs((PType)(dynamic)(a));  
+            return _baseField.Abs((RF)(dynamic)(a));  
         }
 
-        virtual public M ScalarMult(PType r, M m)
+        virtual public M ScalarMult(RF r, M m)
         {
             return (M)((dynamic)r*(dynamic)m);
         }

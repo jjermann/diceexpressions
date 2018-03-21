@@ -5,38 +5,41 @@ using DiceExpressions.Model.AlgebraicDefaultImplementations;
 using DiceExpressions.Model.AlgebraicStructure;
 using DiceExpressions.Model.Helpers;
 using OxyPlot;
-using PType = System.Double;
 
 namespace DiceExpressions.Model.Densities
 {
     public static class DensityPlotExtensionMethods
     {
-        public static string Plot<G,M>(this IDensity<G,M> d, int plotWidth = 70)
+        public static string Plot<G,M,RF>(this IDensity<G,M,RF> d, int plotWidth = 70)
             where G :
                 IBaseStructure<M>
+            where RF :
+                struct
         {
-            var pf = Density<G,M>.PField;
-            var maxPercentage = pf.Max(d.GetValues());
-            var asciiPlotter = new AsciiPlotter<M, RealFieldType<PType>, PType>(new RealFieldType<PType>());
+            var rf = d.RealField;
+            var maxPercentage = rf.Max(d.GetValues());
+            var asciiPlotter = new AsciiPlotter<M, RealFieldType<RF>, RF>(new RealFieldType<RF>());
             var plotStr = asciiPlotter.GetPlot(
                 k => d[k],
                 d.SortedKeys(),
                 plotWidth:plotWidth,
-                minP:pf.Zero(),
+                minP:rf.Zero(),
                 maxP:maxPercentage,
                 asPercentage:true);
             return plotStr;
         }
 
-        public static PlotModel OxyPlot<G,M>(this IDensity<G,M> d, string title = null)
+        public static PlotModel OxyPlot<G,M,RF>(this IDensity<G,M,RF> d, string title = null)
             where G :
                 IBaseStructure<M>,
-                IRealEmbedding<M>
+                IRealEmbedding<M,RF>
             where M :
                 struct
+            where RF :
+                struct
         {
-            var oxyplotter = new OxyPlotter<G,M,RealFieldType<PType>,PType>(d.BaseStructure, new RealFieldType<PType>());
-            var pf = Density<G,M>.PField;
+            var oxyplotter = new OxyPlotter<G,M,RealFieldType<RF>,RF>(d.BaseStructure, new RealFieldType<RF>());
+            var rf = d.RealField;
             title = title ?? d.GetTrimmedName();
             // TODO: For Expected() and Stdev() much more assumptions are necessary!
             // var subtitle = string.Format(
@@ -51,16 +54,18 @@ namespace DiceExpressions.Model.Densities
                 d.SortedKeys(),
                 title: title,
                 subtitle: subtitle,
-                yMin: 0.0,
-                valueLabelFormatter: p => p.ToString("P", CultureInfo.InvariantCulture));
+                yMin: rf.EmbedFromReal(0.0),
+                valueLabelFormatter: p => rf.EmbedToReal(p).ToString("P", CultureInfo.InvariantCulture));
             return plotModel;
         }
 
-        public static string GetOxyPlotSvg<G,M>(this IDensity<G,M> d, string title)
+        public static string GetOxyPlotSvg<G,M,RF>(this IDensity<G,M,RF> d, string title)
             where G :
                 IBaseStructure<M>,
-                IRealEmbedding<M>
+                IRealEmbedding<M,RF>
             where M :
+                struct
+            where RF :
                 struct
         {
             var oxyplot = d.OxyPlot(title);
@@ -69,11 +74,13 @@ namespace DiceExpressions.Model.Densities
             return res;
         }
 
-        public static void SaveOxyPlotPdf<G,M>(this IDensity<G,M> d, string filename = null)
+        public static void SaveOxyPlotPdf<G,M,RF>(this IDensity<G,M,RF> d, string filename = null)
             where G :
                 IBaseStructure<M>,
-                IRealEmbedding<M>
+                IRealEmbedding<M,RF>
             where M :
+                struct
+            where RF :
                 struct
         {
             filename = filename ?? d.GetTrimmedName() + ".pdf";

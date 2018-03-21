@@ -2,16 +2,17 @@ using System;
 using Antlr4.Runtime;
 using DiceExpressions.Model;
 using DiceExpressions.Model.AlgebraicDefaultImplementations;
+using PType = System.Double;
 
 namespace DiceExpressions.Model.Helpers
 {
-    using EType = DensityExpressionResult<FieldType<int>, int>;
+    using EType = DensityExpressionResult<FieldType<int,PType>, int, PType>;
     public static class DieParser
     {
         public static EType Parse(string densityStr)
         {
             if (string.IsNullOrEmpty(densityStr)) {
-                var res = new DensityExpressionResult<FieldType<int>,int> {
+                var res = new DensityExpressionResult<FieldType<int,PType>,int,PType> {
                     ErrorString = "Empty expression string!"
                 };
                 return res;
@@ -29,7 +30,7 @@ namespace DiceExpressions.Model.Helpers
                 return res;
             } catch(Exception e)
             {
-                var res = new DensityExpressionResult<FieldType<int>,int> {
+                var res = new DensityExpressionResult<FieldType<int,PType>,int,PType> {
                     ErrorString = e.Message
                 };
                 return res;

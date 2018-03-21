@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using DiceExpressions.Model.AlgebraicStructure;
-using PType = System.Double;
 
 namespace DiceExpressions.Model.AlgebraicDefaultImplementations
 {

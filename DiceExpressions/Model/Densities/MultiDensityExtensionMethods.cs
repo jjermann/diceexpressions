@@ -3,13 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DiceExpressions.Model.AlgebraicStructure;
-using PType = System.Double;
 
 namespace DiceExpressions.Model.Densities
 {
     public static class MultiDensityExtensionMethods
     {
-        public static IDensity<G,M> KeepHighest<G,M>(this MultiDensity<G,M> d, int n = 1)
+        public static IDensity<G,M,RF> KeepHighest<G,M,RF>(this MultiDensity<G,M,RF> d, int n = 1)
             where G :
                 IAdditiveMonoid<M>
         {
@@ -18,10 +17,10 @@ namespace DiceExpressions.Model.Densities
             {
                 return d.KeepLowest(-n);
             }
-            IDensity<G,M> resDensity;
+            IDensity<G,M,RF> resDensity;
             if (n == 0)
             {
-                resDensity = new Zero<G,M>(g);
+                resDensity = new Zero<G,M,RF>(g, d.RealField);
             } else if (n == 1)
             {
                 resDensity = d.MultiOp<G,M>(g, en => g.Max(en));
@@ -34,7 +33,7 @@ namespace DiceExpressions.Model.Densities
             return resDensity;
         }
 
-        public static IDensity<G,M> KeepLowest<G,M>(this MultiDensity<G,M> d, int n = 1)
+        public static IDensity<G,M,RF> KeepLowest<G,M,RF>(this MultiDensity<G,M,RF> d, int n = 1)
             where G :
                 IAdditiveMonoid<M>
         {
@@ -43,10 +42,10 @@ namespace DiceExpressions.Model.Densities
             {
                 return d.KeepHighest(-n);
             }
-            IDensity<G,M> resDensity;
+            IDensity<G,M,RF> resDensity;
             if (n == 0)
             {
-                resDensity = new Zero<G,M>(g);
+                resDensity = new Zero<G,M,RF>(g, d.RealField);
             } else if (n == 1)
             {
                 resDensity = d.MultiOp<G,M>(g, en => g.Min(en));
@@ -59,7 +58,7 @@ namespace DiceExpressions.Model.Densities
             return resDensity;
         }
 
-        public static IDensity<G,M> DropHighest<G,M>(this MultiDensity<G,M> d, int n = 1)
+        public static IDensity<G,M,RF> DropHighest<G,M,RF>(this MultiDensity<G,M,RF> d, int n = 1)
             where G :
                 IAdditiveMonoid<M>
         {
@@ -69,10 +68,10 @@ namespace DiceExpressions.Model.Densities
             {
                 return d.DropLowest(-n);
             }
-            IDensity<G,M> resDensity;
+            IDensity<G,M,RF> resDensity;
             if (remaining == 0)
             {
-                resDensity = new Zero<G,M>(g);
+                resDensity = new Zero<G,M,RF>(g, d.RealField);
             } else if (n == 0)
             {
                 resDensity = d.AsSummedDensity();
@@ -85,7 +84,7 @@ namespace DiceExpressions.Model.Densities
             return resDensity;
         }
 
-        public static IDensity<G,M> DropLowest<G,M>(this MultiDensity<G,M> d, int n = 1)
+        public static IDensity<G,M,RF> DropLowest<G,M,RF>(this MultiDensity<G,M,RF> d, int n = 1)
             where G :
                 IAdditiveMonoid<M>
         {
@@ -95,10 +94,10 @@ namespace DiceExpressions.Model.Densities
             {
                 return d.DropHighest(-n);
             }
-            IDensity<G,M> resDensity;
+            IDensity<G,M,RF> resDensity;
             if (remaining == 0)
             {
-                resDensity = new Zero<G,M>(g);
+                resDensity = new Zero<G,M,RF>(g, d.RealField);
             } else if (n == 0)
             {
                 resDensity = d.AsSummedDensity();

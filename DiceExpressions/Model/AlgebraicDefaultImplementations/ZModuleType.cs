@@ -1,28 +1,27 @@
 using DiceExpressions.Model.AlgebraicStructure;
-using PType = System.Double;
 
 namespace DiceExpressions.Model.AlgebraicDefaultImplementations
 {
 
     // A commonly used default class, we base on RingType<M> to have a default multiplication already defined
-    public class ZModuleType<M> :
+    public class ZModuleType<M,RF> :
         RingType<M>,
-        IModuleWithExtension<M, int, PType, PType>
+        IModuleWithExtension<M, int, RF, RF>
     {
         private static readonly IRing<int> _baseRing = new RingType<int>();
-        private static readonly IRealVectorspace<PType, PType> _extensionVectorSpace = new RealVectorspaceType<PType>();
+        private static readonly IRealVectorspace<RF, RF> _extensionVectorSpace = new RealVectorspaceType<RF, RF>();
 
-        public IRealVectorspace<PType, PType> ExtensionVectorspace => _extensionVectorSpace;
+        public IRealVectorspace<RF, RF> ExtensionVectorspace => _extensionVectorSpace;
         public IRing<int> BaseRing => _baseRing;
 
-        public PType ModuleEmbedding(M m)
+        public RF ModuleEmbedding(M m)
         {
-            return (PType)(dynamic)(m);
+            return (RF)(dynamic)(m);
         }
 
-        public PType RingEmbedding(int r)
+        public RF RingEmbedding(int r)
         {
-            return (PType)(dynamic)(r);
+            return (RF)(dynamic)(r);
         }
 
         virtual public M ScalarMult(int r, M m)

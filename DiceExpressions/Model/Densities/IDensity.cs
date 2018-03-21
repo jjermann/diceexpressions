@@ -1,14 +1,15 @@
 using System;
 using System.Collections.Generic;
-using PType = System.Double;
+using DiceExpressions.Model.AlgebraicStructure;
 
 namespace DiceExpressions.Model.Densities
 {
-    public interface IDensity<out G, M>
+    public interface IDensity<out G, M, RF>
     {
+        IRealField<RF> RealField { get; }
         G BaseStructure { get; }
         string Name { get; set; }
-        PType this[M key] { get; }
-        IDictionary<M, PType> Dictionary { get; }
+        RF this[M key] { get; }
+        IDictionary<M, RF> Dictionary { get; }
     }
 }

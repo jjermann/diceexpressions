@@ -1,9 +1,7 @@
-using PType = System.Double;
-
 namespace DiceExpressions.Model.AlgebraicStructure
 {
-    public interface IRealEmbedding<R>
+    public interface IRealEmbedding<R,RF>
     {
-        PType EmbedToReal(R r);
+        RF EmbedToReal(R r);
     }
 }

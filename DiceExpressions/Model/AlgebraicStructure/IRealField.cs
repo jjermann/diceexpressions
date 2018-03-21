@@ -8,7 +8,7 @@ namespace DiceExpressions.Model.AlgebraicStructure
     public interface IRealField<R> :
         IField<R>,
         IComparer<R>,
-        IRealEmbedding<R>
+        IRealEmbedding<R, PType>
     { 
         R EmbedFromReal(PType p);
     }

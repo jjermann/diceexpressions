@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using PType = System.Double;
 
 namespace DiceExpressions.Model.Densities
 {
-    public partial class Density<G, M> : IEquatable<IDensity<G,M>>
+    public partial class Density<G, M, RF> : IEquatable<IDensity<G,M,RF>>
     {
-        public bool Equals(IDensity<G, M> other)
+        public bool Equals(IDensity<G, M, RF> other)
         {
             var isNull = object.ReferenceEquals(other, null);
             if (isNull)
@@ -34,7 +33,7 @@ namespace DiceExpressions.Model.Densities
         public override bool Equals(Object obj)
         {
             if (ReferenceEquals(obj, this)) return true;
-            var dObj = obj as IDensity<G, M>;
+            var dObj = obj as IDensity<G, M, RF>;
             return Equals(dObj);
         }
         //TODO: The keys are not sorted! So it could happend that D1/D2 are equal but have different hashcodes!

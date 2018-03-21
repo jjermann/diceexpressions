@@ -3,13 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DiceExpressions.Model.AlgebraicStructure;
-using PType = System.Double;
 
 namespace DiceExpressions.Model.Densities
 {
     public static class DensityExtensionMethods
     {
-        public static string GetTrimmedName<G,M>(this IDensity<G,M> d)
+        public static string GetTrimmedName<G,M,RF>(this IDensity<G,M,RF> d)
         {
             var trimmedName = d.Name;
             while(trimmedName.StartsWith("(") && trimmedName.EndsWith(")"))
@@ -18,34 +17,34 @@ namespace DiceExpressions.Model.Densities
             }
             return trimmedName;
         }
-        public static IList<M> GetKeys<G,M>(this IDensity<G,M> d)
+        public static IList<M> GetKeys<G,M,RF>(this IDensity<G,M,RF> d)
         {
             return d.Dictionary.Keys.ToList();
         }
-        public static IList<PType> GetValues<G,M>(this IDensity<G,M> d)
+        public static IList<RF> GetValues<G,M,RF>(this IDensity<G,M,RF> d)
         {
             return d.GetKeys().Select(k => d.Dictionary[k]).ToList();
         }
 
-        public static IDensity<S, N> Op<G, M, S, N>(this IDensity<G,M> d,
+        public static IDensity<S, N, RF> Op<G, M, S, N, RF>(this IDensity<G,M,RF> d,
             S newBaseStructure,
             Func<M, N> op,
             Func<string, string> opStrFunc = null)
         {
             return Op(d, newBaseStructure, op, opStrFunc);
         }
-        public static PType Prob<G,M>(this IDensity<G,M> d, Func<M, bool> cond)
+        public static RF Prob<G,M,RF>(this IDensity<G,M,RF> d, Func<M, bool> cond)
         {
             return Prob(d, cond);
         }
-        public static IDensity<G, M> ConditionalDensity<G,M>(this IDensity<G,M> d,
+        public static IDensity<G, M, RF> ConditionalDensity<G,M,RF>(this IDensity<G,M,RF> d,
             Func<M, bool> cond,
             Func<string,string> condStrFunc = null)
         {
             return ConditionalDensity(d, cond, condStrFunc);
         }
 
-        public static IDensity<G,M> Negate<G,M>(this IDensity<G,M> d)
+        public static IDensity<G,M,RF> Negate<G,M,RF>(this IDensity<G,M,RF> d)
             where G :
                 IAdditiveGroup<M>
         {
@@ -53,83 +52,83 @@ namespace DiceExpressions.Model.Densities
             return d.Op(g, a => g.Negate(a), s => $"(-{s})");
         }
 
-        public static IDensity<G,M> Add<G,M>(this IDensity<G,M> d, IDensity<G,M> d2)
+        public static IDensity<G,M,RF> Add<G,M,RF>(this IDensity<G,M,RF> d, IDensity<G,M,RF> d2)
             where G :
                IAdditiveMonoid<M>
         {
             var g = d.BaseStructure;
-            return Density<G,M>.BinaryOp<G,M>(g, d, d2, (a,b) => g.Add(a, b), (s,t) => $"({s}+{t})");
+            return Density<G,M,RF>.BinaryOp<G,M>(g, d, d2, (a,b) => g.Add(a, b), (s,t) => $"({s}+{t})");
         }
-        public static IDensity<G,M> Subtract<G,M>(this IDensity<G,M> d, IDensity<G,M> d2)
+        public static IDensity<G,M,RF> Subtract<G,M,RF>(this IDensity<G,M,RF> d, IDensity<G,M,RF> d2)
             where G :
                 IAdditiveGroup<M>
         {
             var g = d.BaseStructure;
-            return Density<G,M>.BinaryOp<G,M>(g, d, d2, (a,b) => g.Subtract(a, b), (s,t) => $"({s}-{t})");
+            return Density<G,M,RF>.BinaryOp<G,M>(g, d, d2, (a,b) => g.Subtract(a, b), (s,t) => $"({s}-{t})");
         }
-        public static IDensity<G,M> Multiply<G,M>(this IDensity<G,M> d, IDensity<G,M> d2)
+        public static IDensity<G,M,RF> Multiply<G,M,RF>(this IDensity<G,M,RF> d, IDensity<G,M,RF> d2)
             where G :
                 IMultiplicativeMonoid<M>
         {
             var g = d.BaseStructure;
-            return Density<G,M>.BinaryOp<G,M>(g, d, d2, (a,b) => g.Multiply(a, b), (s,t) => $"({s}*{t})");
+            return Density<G,M,RF>.BinaryOp<G,M>(g, d, d2, (a,b) => g.Multiply(a, b), (s,t) => $"({s}*{t})");
         }
-        public static IDensity<G,M> Divide<G,M>(this IDensity<G,M> d, IDensity<G,M> d2)
+        public static IDensity<G,M,RF> Divide<G,M,RF>(this IDensity<G,M,RF> d, IDensity<G,M,RF> d2)
             where G :
                 IMultiplicativeGroup<M>
         {
             var g = d.BaseStructure;
-            return Density<G,M>.BinaryOp<G,M>(g, d, d2, (a,b) => g.Divide(a, b), (s,t) => $"({s}/{t})");
+            return Density<G,M,RF>.BinaryOp<G,M>(g, d, d2, (a,b) => g.Divide(a, b), (s,t) => $"({s}/{t})");
         }
 
-        public static PType EqProb<G,M>(this IDensity<G,M> d, IDensity<G,M> d2)
+        public static RF EqProb<G,M,RF>(this IDensity<G,M,RF> d, IDensity<G,M,RF> d2)
             where G :
                 IBaseStructure<M>
         {
             var g = d.BaseStructure;
-            return Density<G,M>.BinaryProb(d, d2, (a,b) => g.Equals(a, b));
+            return Density<G,M,RF>.BinaryProb(d, d2, (a,b) => g.Equals(a, b));
         }
-        public static PType NeqProb<G,M>(this IDensity<G,M> d, IDensity<G,M> d2)
+        public static RF NeqProb<G,M,RF>(this IDensity<G,M,RF> d, IDensity<G,M,RF> d2)
             where G :
                 IBaseStructure<M>
         {
             var g = d.BaseStructure;
-            return Density<G,M>.BinaryProb(d, d2, (a,b) => !g.Equals(a, b));
+            return Density<G,M,RF>.BinaryProb(d, d2, (a,b) => !g.Equals(a, b));
         }
-        public static PType LtProb<G,M>(this IDensity<G,M> d, IDensity<G,M> d2)
+        public static RF LtProb<G,M,RF>(this IDensity<G,M,RF> d, IDensity<G,M,RF> d2)
             where G :
                 IBaseStructure<M>,
                 IComparer<M>
         {
             var g = d.BaseStructure;
-            return Density<G,M>.BinaryProb(d, d2, (a,b) => g.Compare(a, b) < 0);
+            return Density<G,M,RF>.BinaryProb(d, d2, (a,b) => g.Compare(a, b) < 0);
         }
-        public static PType GtProb<G,M>(this IDensity<G,M> d, IDensity<G,M> d2)
+        public static RF GtProb<G,M,RF>(this IDensity<G,M,RF> d, IDensity<G,M,RF> d2)
             where G :
                 IBaseStructure<M>,
                 IComparer<M>
         {
             var g = d.BaseStructure;
-            return Density<G,M>.BinaryProb(d, d2, (a,b) => g.Compare(a, b) > 0);
+            return Density<G,M,RF>.BinaryProb(d, d2, (a,b) => g.Compare(a, b) > 0);
         }
-        public static PType LeqProb<G,M>(this IDensity<G,M> d, IDensity<G,M> d2)
+        public static RF LeqProb<G,M,RF>(this IDensity<G,M,RF> d, IDensity<G,M,RF> d2)
             where G :
                 IBaseStructure<M>,
                 IComparer<M>
         {
             var g = d.BaseStructure;
-            return Density<G,M>.BinaryProb(d, d2, (a,b) => g.Compare(a, b) <= 0);
+            return Density<G,M,RF>.BinaryProb(d, d2, (a,b) => g.Compare(a, b) <= 0);
         }
-        public static PType GeqProb<G,M>(this IDensity<G,M> d, IDensity<G,M> d2)
+        public static RF GeqProb<G,M,RF>(this IDensity<G,M,RF> d, IDensity<G,M,RF> d2)
             where G :
                 IBaseStructure<M>,
                 IComparer<M>
         {
             var g = d.BaseStructure;
-            return Density<G,M>.BinaryProb(d, d2, (a,b) => g.Compare(a, b) >= 0);
+            return Density<G,M,RF>.BinaryProb(d, d2, (a,b) => g.Compare(a, b) >= 0);
         }
 
-        public static IList<M> SortedKeys<G,M>(this IDensity<G,M> d)
+        public static IList<M> SortedKeys<G,M,RF>(this IDensity<G,M,RF> d)
             where G :
                 IBaseStructure<M>,
                 IComparer<M>
@@ -137,7 +136,7 @@ namespace DiceExpressions.Model.Densities
             return d.GetKeys().OrderBy(k => k, d.BaseStructure).ToList();
         }
 
-        public static IList<PType> SortedValues<G,M>(this IDensity<G,M> d)
+        public static IList<RF> SortedValues<G,M,RF>(this IDensity<G,M,RF> d)
             where G :
                 IBaseStructure<M>,
                 IComparer<M>
@@ -145,7 +144,7 @@ namespace DiceExpressions.Model.Densities
             return d.SortedKeys().Select(k => d[k]).ToList();
         }
 
-        public static IDensity<G,M> ArithMult<G,M>(this IDensity<G,M> d, int n)
+        public static IDensity<G,M,RF> ArithMult<G,M,RF>(this IDensity<G,M,RF> d, int n)
             where G :
                 IAdditiveMonoid<M>
         {
@@ -155,7 +154,7 @@ namespace DiceExpressions.Model.Densities
             }
             if (n == 0)
             {
-                return new Zero<G,M>(d.BaseStructure);
+                return new Zero<G,M,RF>(d.BaseStructure, d.RealField);
             }
             var newDensity = d;
             foreach(var step in Enumerable.Range(1, n-1))
@@ -166,11 +165,12 @@ namespace DiceExpressions.Model.Densities
             return newDensity;
         }
 
-        public static IDensity<G,M> ArithMult<G,M>(this IDensity<G,M> d, Density<int> dInt)
+        public static IDensity<G,M,RF> ArithMult<G,M,RF>(this IDensity<G,M,RF> d, Density<int> dInt)
             where G :
                 IAdditiveMonoid<M>
         {
-            var resDict = new Dictionary<M, PType>();
+            var resDict = new Dictionary<M, RF>();
+            var rf = d.RealField;
             foreach (var key in dInt.GetKeys())
             {
                 var mulDensity = d.ArithMult(key);
@@ -178,80 +178,78 @@ namespace DiceExpressions.Model.Densities
                 {
                     if (!resDict.ContainsKey(mulKey))
                     {
-                        resDict[mulKey] = default(PType);
+                        resDict[mulKey] = default(RF);
                     }
-                    resDict[mulKey] += mulDensity[mulKey]*dInt[key];
+                    resDict[mulKey] = rf.Add(resDict[mulKey], rf.Multiply(mulDensity[mulKey],rf.EmbedFromReal(dInt[key])));
                 }
             }
-            var newDensity = new Density<G,M>(resDict, d.BaseStructure, $"{d.GetTrimmedName()}.ArithMult({dInt.GetTrimmedName()})");
+            var newDensity = new Density<G,M,RF>(resDict, d.BaseStructure, d.RealField, $"{d.GetTrimmedName()}.ArithMult({dInt.GetTrimmedName()})");
             return newDensity;
         }
 
-        public static MP Expected<MP,RP>(this IDensity<IRealVectorspace<MP,RP>,MP> d)
+        public static MP Expected<MP,RF>(this IDensity<IRealVectorspace<MP,RF>,MP,RF> d)
         {
             var gp = d.BaseStructure;
             var grp = gp.BaseRealField;
-            //TODO: Instead values should lie in a probability field (not PType)...
-            var expected = gp.Sum(d.Dictionary.Select(p => gp.ScalarMult(grp.EmbedFromReal(p.Value), p.Key)));
+            var expected = gp.Sum(d.Dictionary.Select(p => gp.ScalarMult(p.Value, p.Key)));
             return expected;
         }
 
-        public static RP Variance<MP,RP>(this IDensity<IRealVectorspace<MP,RP>,MP> d)
+        public static RF Variance<MP,RF>(this IDensity<IRealVectorspace<MP,RF>,MP,RF> d)
         {
             var gp = d.BaseStructure;
             var grp = gp.BaseRealField;
-            var expected = d.Expected<MP,RP>();
-            Func<MP, RP> normFunc = mp => grp.ScalarPow(gp.Norm(gp.Subtract(expected, mp)), 2);
-            //TODO: Instead values should lie in a probability field (not PType)...
+            var expected = d.Expected<MP,RF>();
+            Func<MP, RF> normFunc = mp => grp.ScalarPow(gp.Norm(gp.Subtract(expected, mp)), 2);
             var squaredDistances = d.Dictionary
-                .Select(p => grp.Multiply(grp.EmbedFromReal(p.Value), normFunc(p.Key)))
+                .Select(p => grp.Multiply(p.Value, normFunc(p.Key)))
                 .ToList();
             var variance = grp.Sum(squaredDistances);
             return variance;
         }
-        public static RP Stdev<MP,RP>(this IDensity<IRealVectorspace<MP,RP>,MP> d)
+        public static RF Stdev<MP,RF>(this IDensity<IRealVectorspace<MP,RF>,MP,RF> d)
         {
             var grp = d.BaseStructure.BaseRealField;
-            return grp.Sqrt(d.Variance<MP,RP>());
+            return grp.Sqrt(d.Variance<MP,RF>());
         }
-        public static PType Cdf<G,M>(this IDensity<G,M> d, PType x)
+        public static RF Cdf<G,M,RF>(this IDensity<G,M,RF> d, RF x)
             where G :
                 IBaseStructure<M>,
                 IComparer<M>,
-                IRealEmbedding<M>
+                IRealEmbedding<M,RF>
         {
             var g = d.BaseStructure;
-            var pf = Density<G,M>.PField;
-            return d.Prob(a => pf.Compare(g.EmbedToReal(a), x) <= 0);
+            var rf = d.RealField;
+            return d.Prob(a => rf.Compare(g.EmbedToReal(a), x) <= 0);
         }
 
-        public static MP Expected<M,R,MP,RP>(this IDensity<IModuleWithExtension<M,R,MP,RP>,M> d)
+        public static MP Expected<M,R,MP,RF>(this IDensity<IModuleWithExtension<M,R,MP,RF>,M,RF> d)
         {
             var g = d.BaseStructure;
-            var embeddedDensity = d.EmbedTo<M,R,MP,RP>();
+            var embeddedDensity = d.EmbedTo<M,R,MP,RF>();
             return embeddedDensity.Expected();
         }
-        public static RP VarianceEmbedded<M,R,MP,RP>(this IDensity<IModuleWithExtension<M,R,MP,RP>,M> d)
+        public static RF VarianceEmbedded<M,R,MP,RF>(this IDensity<IModuleWithExtension<M,R,MP,RF>,M,RF> d)
         {
-            var embeddedDensity = d.EmbedTo<M,R,MP,RP>();
-            return embeddedDensity.Variance<MP,RP>();
+            var embeddedDensity = d.EmbedTo<M,R,MP,RF>();
+            return embeddedDensity.Variance<MP,RF>();
         }
-        public static RP StdevEmbedded<M,R,MP,RP>(this IDensity<IModuleWithExtension<M,R,MP,RP>,M> d)
+        public static RF StdevEmbedded<M,R,MP,RF>(this IDensity<IModuleWithExtension<M,R,MP,RF>,M,RF> d)
         {
-            var embeddedDensity = d.EmbedTo<M,R,MP,RP>();
-            return embeddedDensity.Stdev<MP,RP>();
+            var embeddedDensity = d.EmbedTo<M,R,MP,RF>();
+            return embeddedDensity.Stdev<MP,RF>();
         }
 
-        public static MultiDensity<G,M> AsMultiDensity<G,M>(this IDensity<G,M> d, int n)
+        public static MultiDensity<G,M,RF> AsMultiDensity<G,M,RF>(this IDensity<G,M,RF> d, int n)
             where G :
                 IAdditiveMonoid<M>
         {
             var dList = Enumerable.Repeat(d, n).ToList();
-            var multiDensity = new MultiDensity<G,M>(dList);
+            var multiDensity = new MultiDensity<G,M,RF>(dList);
             return multiDensity;
         }
 
-        public static IDensity<G,M> WithAdvantage<G,M>(this IDensity<G,M> d, int n = 1)
+        public static IDensity<G,M,RF> WithAdvantage<G,M,RF>(this IDensity<G,M,RF> d, int n = 1)
             where G :
                 IAdditiveMonoid<M>,
                 IComparer<M>
@@ -267,13 +265,13 @@ namespace DiceExpressions.Model.Densities
             }
             if (n == 1)
             {
-                return Density<G,M>.BinaryOp<G,M>(d.BaseStructure, d, d, (a,b) => g.Max(a,b), (s,t) => $"a{s}");
+                return Density<G,M,RF>.BinaryOp<G,M>(d.BaseStructure, d, d, (a,b) => g.Max(a,b), (s,t) => $"a{s}");
             }
             var mDensity = d.AsMultiDensity(n).MultiOp<G,M>(d.BaseStructure, e => g.Max(e), e => $"a{n}{e.First()}");
             return mDensity;
         }
 
-        public static IDensity<G,M> WithDisadvantage<G,M>(this IDensity<G,M> d, int n = 1)
+        public static IDensity<G,M,RF> WithDisadvantage<G,M,RF>(this IDensity<G,M,RF> d, int n = 1)
             where G :
                 IAdditiveMonoid<M>,
                 IComparer<M>
@@ -289,20 +287,20 @@ namespace DiceExpressions.Model.Densities
             }
             if (n == 1)
             {
-                return Density<G,M>.BinaryOp<G,M>(d.BaseStructure, d, d, (a,b) => g.Min(a,b), (s,t) => $"d{s}");
+                return Density<G,M,RF>.BinaryOp<G,M>(d.BaseStructure, d, d, (a,b) => g.Min(a,b), (s,t) => $"d{s}");
             }
             var mDensity = d.AsMultiDensity(n).MultiOp<G,M>(d.BaseStructure, e => g.Min(e), e => $"d{n}{e.First()}");
             return mDensity;
         }
 
-        public static IDensity<IRealVectorspace<MP,RP>,MP> EmbedTo<M,R,MP,RP>(this IDensity<IModuleWithExtension<M,R,MP,RP>,M> d)
+        public static IDensity<IRealVectorspace<MP,RF>,MP,RF> EmbedTo<M,R,MP,RF>(this IDensity<IModuleWithExtension<M,R,MP,RF>,M,RF> d)
         {
             var g = d.BaseStructure;
             var resDict = d.Dictionary.ToDictionary(
                 x => g.ModuleEmbedding(x.Key),
                 x => x.Value
             );
-            var resDensity = new Density<IRealVectorspace<MP,RP>,MP>(resDict, g.ExtensionVectorspace, d.Name);
+            var resDensity = new Density<IRealVectorspace<MP,RF>,MP,RF>(resDict, g.ExtensionVectorspace, d.RealField, d.Name);
             return resDensity;
         }
     }

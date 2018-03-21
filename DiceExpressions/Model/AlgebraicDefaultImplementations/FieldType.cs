@@ -1,19 +1,18 @@
 using System;
 using System.Collections.Generic;
 using DiceExpressions.Model.AlgebraicStructure;
-using PType = System.Double;
 
 namespace DiceExpressions.Model.AlgebraicDefaultImplementations
 {
-    public class FieldType<M> :
-        ZModuleType<M>,
+    public class FieldType<M,RF> :
+        ZModuleType<M,RF>,
         IField<M>,
-        IRealEmbedding<M>,
-        IModuleWithExtension<M, int, PType, PType>
+        IRealEmbedding<M,RF>,
+        IModuleWithExtension<M, int, RF, RF>
     {
-        public PType EmbedToReal(M r)
+        public RF EmbedToReal(M r)
         {
-            return (PType)(dynamic)(r);
+            return (RF)(dynamic)(r);
         }
 
         virtual public M Inverse(M a)

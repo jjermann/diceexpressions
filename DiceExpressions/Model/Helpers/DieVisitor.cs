@@ -3,11 +3,12 @@ using System.Text.RegularExpressions;
 using System.Linq;
 using DiceExpressions.Model.Densities;
 using DiceExpressions.Model.AlgebraicDefaultImplementations;
+using PType = System.Double;
 
 namespace DiceExpressions.Model.Helpers
 {
     public class DieVisitor :
-        DensityVisitor<FieldType<int>, int>
+        DensityVisitor<FieldType<int,PType>, int, PType>
     {
         private static Regex _variableMatch;
         static DieVisitor()
@@ -23,14 +24,14 @@ namespace DiceExpressions.Model.Helpers
             _variableMatch = new Regex(regexMatch, RegexOptions.Singleline);
         }
 
-        public override IDensity<FieldType<int>,int> VisitNumber(DensityExpressionGrammarParser.NumberContext ctx)
+        public override IDensity<FieldType<int,PType>,int,PType> VisitNumber(DensityExpressionGrammarParser.NumberContext ctx)
         {
             var num = int.Parse(ctx.NUMBER().GetText());
             var density = new Constant<int>(num);
             return density;
         }
 
-        public override IDensity<FieldType<int>, int> VisitVariable(DensityExpressionGrammarParser.VariableContext ctx)
+        public override IDensity<FieldType<int,PType>, int, PType> VisitVariable(DensityExpressionGrammarParser.VariableContext ctx)
         {
             var variableStr = ctx.VARIABLE().GetText();
 

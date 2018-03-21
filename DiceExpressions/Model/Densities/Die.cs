@@ -7,17 +7,24 @@ using PType = System.Double;
 
 namespace DiceExpressions.Model.Densities
 {
-    public class UniformDensity<M> :
-        UniformDensity<FieldType<M>, M>
+    public class Density<M> :
+        Density<FieldType<M,PType>, M, PType>
     {
-        public UniformDensity(params M[] keys) : base(new FieldType<M>(), keys) { }
+        public Density(Density<M> density) : base(density) { }
+        public Density(IDictionary<M, PType> dict, string name = null) : base(dict, new FieldType<M,PType>(), new RealFieldType<PType>(), name) { }
     }
-    public class UniformDensity<G, M> :
-        Density<G, M>
-    {
-        public UniformDensity(G baseStructure, params M[] keys) : base(GetUniformDensityDict(keys), baseStructure, "UniformDensity") { }
 
-        protected static IDictionary<M, PType> GetUniformDensityDict(params M[] keys)
+    public class UniformDensity<M> :
+        UniformDensity<FieldType<M,PType>, M, PType>
+    {
+        public UniformDensity(params M[] keys) : base(new FieldType<M,PType>(), new RealFieldType<PType>(), keys) { }
+    }
+    public class UniformDensity<G, M, RF> :
+        Density<G, M, RF>
+    {
+        public UniformDensity(G baseStructure, IRealField<RF> realField, params M[] keys) : base(GetUniformDensityDict(realField, keys), baseStructure, realField, "UniformDensity") { }
+
+        protected static IDictionary<M, RF> GetUniformDensityDict(IRealField<RF> realField, params M[] keys)
         {
             var distinctKeys = keys.Distinct().ToList();
             var count = distinctKeys.Count;
@@ -26,55 +33,55 @@ namespace DiceExpressions.Model.Densities
                 throw new NotImplementedException();
             }
 
-            var uniformDict = distinctKeys.ToDictionary(l => l, l => ((PType)1) / count);
+            var uniformDict = distinctKeys.ToDictionary(l => l, l => realField.Divide(realField.One(), realField.EmbedFrom(count)));
             return uniformDict;
         }
     }
 
     public class Constant<M> :
-        Constant<FieldType<M>, M>
+        Constant<FieldType<M,PType>, M, PType>
     {
-        public Constant(M v) : base(new FieldType<M>(), v) { }
+        public Constant(M v) : base(new FieldType<M,PType>(), new RealFieldType<PType>(), v) { }
         public static implicit operator Constant<M>(M t)
         {
             return new Constant<M>(t);
         }
     }
-    public class Constant<G, M> :
-        UniformDensity<G, M>
+    public class Constant<G, M, RF> :
+        UniformDensity<G, M, RF>
     {
         public M Key => this.GetKeys().Single();
 
-        public Constant(G baseStructure, M v) : base(baseStructure, v)
+        public Constant(G baseStructure, IRealField<RF> realField, M v) : base(baseStructure, realField, v)
         {
             Name = $"{v}";
         }
     }
 
     public class Zero<M> :
-        Zero<FieldType<M>, M>
+        Zero<FieldType<M,PType>, M, PType>
     {
-        public Zero() : base(new FieldType<M>()) { }
+        public Zero() : base(new FieldType<M,PType>(), new RealFieldType<PType>()) { }
     }
-    public class Zero<G, M> :
-        Constant<G, M>
+    public class Zero<G, M, RF> :
+        Constant<G, M, RF>
         where G :
             IAdditiveMonoid<M>
     {
-        public Zero(G baseStructure) : base(baseStructure, baseStructure.Zero()) { }
+        public Zero(G baseStructure, IRealField<RF> realField) : base(baseStructure, realField, baseStructure.Zero()) { }
     }
 
     public class One<M> :
-        One<FieldType<M>, M>
+        One<FieldType<M,PType>, M, PType>
     {
-        public One() : base(new FieldType<M>()) { }
+        public One() : base(new FieldType<M,PType>(), new RealFieldType<PType>()) { }
     }
-    public class One<G, M> :
-        Constant<G, M>
+    public class One<G, M, RF> :
+        Constant<G, M, RF>
         where G :
             IMultiplicativeMonoid<M>
     {
-        public One(G baseStructure) : base(baseStructure, baseStructure.One()) { }
+        public One(G baseStructure, IRealField<RF> realField) : base(baseStructure, realField, baseStructure.One()) { }
     }
 
     public class Die :
