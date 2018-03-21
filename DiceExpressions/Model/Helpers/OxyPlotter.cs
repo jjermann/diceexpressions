@@ -13,8 +13,7 @@ namespace DiceExpressions.Model.Helpers
     public class OxyPlotter<G, M, F, R>
         where G :
             IBaseStructure<M>,
-            IComparer<M>,
-            IRealEmbedding<M, double>
+            IRealEmbedding<M>
         where F :
             IRealField<R>
         where M :

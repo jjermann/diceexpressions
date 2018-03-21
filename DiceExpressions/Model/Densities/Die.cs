@@ -43,7 +43,7 @@ namespace DiceExpressions.Model.Densities
     public class Constant<G, M> :
         UniformDensity<G, M>
     {
-        public M Key => Keys.Single();
+        public M Key => this.GetKeys().Single();
 
         public Constant(G baseStructure, M v) : base(baseStructure, v)
         {

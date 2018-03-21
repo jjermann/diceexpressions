@@ -7,16 +7,17 @@ namespace DiceExpressions.Model.AlgebraicDefaultImplementations
         GroupType<M>,
         IRealVectorspace<M, PType>
     {
-        private static readonly IField<PType> _baseField = new FieldType<PType>();
+        private static readonly IRealField<PType> _baseField = new RealFieldType<PType>();
         public IField<PType> BaseField => _baseField;
 
-        public IRing<PType> BaseRing => throw new System.NotImplementedException();
+        public IRing<PType> BaseRing => _baseField;
 
-        public IRealField<PType> BaseRealField => throw new System.NotImplementedException();
+        public IRealField<PType> BaseRealField => _baseField;
 
+        // We provide a default implementation for Norm that just tries to cast to PType first...
         public PType Norm(M a)
         {
-            throw new System.NotImplementedException();  
+            return _baseField.Abs((PType)(dynamic)(a));  
         }
 
         virtual public M ScalarMult(PType r, M m)

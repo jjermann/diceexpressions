@@ -10,8 +10,8 @@ namespace DiceExpressions.Model.Densities
     public class MultiDensity<M> :
         MultiDensity<FieldType<M>, M>
     { 
-        public MultiDensity(params Density<FieldType<M>,M>[] dArray) : base(dArray) { }
-        public MultiDensity(IList<Density<FieldType<M>,M>> dList) : base(dList) { }
+        public MultiDensity(params IDensity<FieldType<M>,M>[] dArray) : base(dArray) { }
+        public MultiDensity(IList<IDensity<FieldType<M>,M>> dList) : base(dList) { }
     }
 
     //TODO: For now we assume an additive monoid to be able to inherit from Density<G, M> (viewed as a sum of densities)
@@ -21,21 +21,21 @@ namespace DiceExpressions.Model.Densities
         where G :
             IAdditiveMonoid<M>
     {
-        public IList<Density<G, M>> DensityList { get; private set; }
+        public IList<IDensity<G, M>> DensityList { get; private set; }
 
-        public MultiDensity(params Density<G, M>[] dArray) : this(dArray.ToList()) { }
-        public MultiDensity(IList<Density<G, M>> dList) : base(GetSummedMultiDensity(dList))
+        public MultiDensity(params IDensity<G, M>[] dArray) : this(dArray.ToList()) { }
+        public MultiDensity(IList<IDensity<G, M>> dList) : base(GetSummedMultiDensity(dList))
         {
             DensityList = dList;
             Name = GetMultiDensityName(dList);
         }
 
-        public Density<G, M> AsSummedDensity()
+        public IDensity<G, M> AsSummedDensity()
         {
             return GetSummedMultiDensity(DensityList);
         }
 
-        public Density<S,N> MultiOp<S,N>(
+        public IDensity<S,N> MultiOp<S,N>(
             S newBaseStructure,
             Func<IEnumerable<M>,N> multiOp, 
             Func<IEnumerable<string>,string> multiOpStrFunc = null)
@@ -45,7 +45,7 @@ namespace DiceExpressions.Model.Densities
             return Density<G,M>.MultiOp<S,N>(newBaseStructure, DensityList, multiOp, multiOpStrFunc);
         }
 
-        protected static Density<G, M> GetSummedMultiDensity(IList<Density<G, M>> dList)
+        protected static IDensity<G, M> GetSummedMultiDensity(IList<IDensity<G, M>> dList)
         {
             if (!dList.Any())
             {
@@ -60,7 +60,7 @@ namespace DiceExpressions.Model.Densities
             return summedDensity;
         }
 
-        protected static string GetMultiDensityName(IList<Density<G, M>> dList)
+        protected static string GetMultiDensityName(IList<IDensity<G, M>> dList)
         {
             var multiName = "[" + string.Join(", ", dList.Select(d => d.Name)) + "]";
             return multiName;

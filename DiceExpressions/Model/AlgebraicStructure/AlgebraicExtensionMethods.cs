@@ -224,10 +224,17 @@ namespace DiceExpressions.Model.AlgebraicStructure
             return resSet.OrderBy(i => i, g);
         }
 
-        //TODO: SumNLargest, SumNSmallest, Abs. But they require both IAdditiveMonoid<M> and also IComparer<M>...
+        public static M SumNLargest<M>(this IAdditiveMonoid<M> g, IEnumerable<M> source, int n)
+        {
+            var nlargest = g.GetNLargest(source, n);
+            return g.Sum(nlargest);
+        }
 
-
-
+        public static M SumNSmallest<M>(this IAdditiveMonoid<M> g, IEnumerable<M> source, int n)
+        {
+            var nsmallest = g.GetNSmallest(source, n);
+            return g.Sum(nsmallest);
+        }
 
         public static Func<R,R> FromRealOp<R>(this IRealField<R> F, Func<PType, PType> f)
         {

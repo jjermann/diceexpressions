@@ -25,8 +25,7 @@ namespace DiceExpressions
                 {13, 0.15}
             };
             var example2 = new Density<FieldType<int>, int>(intDict, new FieldType<int>());
-            //TODO
-            // var exp = example2.Expected();
+            var exp = example2.Expected();
 
             OxyPlotModule.EnsureLoaded();
             AppBuilder.Configure<App>()

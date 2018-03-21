@@ -23,14 +23,14 @@ namespace DiceExpressions.Model.Helpers
             _variableMatch = new Regex(regexMatch, RegexOptions.Singleline);
         }
 
-        public override Density<FieldType<int>,int> VisitNumber(DensityExpressionGrammarParser.NumberContext ctx)
+        public override IDensity<FieldType<int>,int> VisitNumber(DensityExpressionGrammarParser.NumberContext ctx)
         {
             var num = int.Parse(ctx.NUMBER().GetText());
             var density = new Constant<int>(num);
             return density;
         }
 
-        public override Density<FieldType<int>, int> VisitVariable(DensityExpressionGrammarParser.VariableContext ctx)
+        public override IDensity<FieldType<int>, int> VisitVariable(DensityExpressionGrammarParser.VariableContext ctx)
         {
             var variableStr = ctx.VARIABLE().GetText();
 

@@ -18,8 +18,7 @@ namespace DiceExpressions.ViewModel
         ViewModelBase
         where G :
             IBaseStructure<M>,
-            IComparer<M>,
-            IRealEmbedding<M, PType>
+            IRealEmbedding<M>
         where M : struct
     {
         protected static readonly TimeSpan ThrottleTimeSpan = TimeSpan.FromMilliseconds(100);
@@ -43,7 +42,7 @@ namespace DiceExpressions.ViewModel
             this.WhenAnyValue(x => x.Density)
                 .Throttle(ThrottleTimeSpan)
                 .ObserveOn(UsedScheduler)
-                .Catch(Observable.Return((Density<G,M>)null))
+                .Catch(Observable.Return((IDensity<G,M>)null))
                 .Select(x => x?.OxyPlot())
                 .ToProperty(this, x => x.Plot, out _plot, null);
             this.WhenAnyValue(x => x.ParsedExpression)
@@ -51,7 +50,7 @@ namespace DiceExpressions.ViewModel
                 .Select(x => x?.Probability)
                 .ToProperty(this, x => x.Probability, out _probability, null);
             this.WhenAnyValue(x => x.Density)
-                .Select(x => x?.TrimmedName)
+                .Select(x => x?.GetTrimmedName())
                 .ToProperty(this, x => x.DensityName, out _densityName, null);
             this.WhenAnyValue(x => x.Probability)
                 .Select(x => x.HasValue ? x.Value.ToString("P3", CultureInfo.InvariantCulture) : (string)null)
@@ -79,8 +78,8 @@ namespace DiceExpressions.ViewModel
             get { return _parsedExpression.Value; }
         }
 
-        private ObservableAsPropertyHelper<Density<G,M>> _density;
-        public Density<G,M> Density
+        private ObservableAsPropertyHelper<IDensity<G,M>> _density;
+        public IDensity<G,M> Density
         {
             get { return _density.Value; }
         }

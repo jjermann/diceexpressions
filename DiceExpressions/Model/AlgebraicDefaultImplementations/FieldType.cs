@@ -8,7 +8,7 @@ namespace DiceExpressions.Model.AlgebraicDefaultImplementations
     public class FieldType<M> :
         ZModuleType<M>,
         IField<M>,
-        IRealEmbedding<M,PType>,
+        IRealEmbedding<M>,
         IModuleWithExtension<M, int, PType, PType>
     {
         public PType EmbedToReal(M r)

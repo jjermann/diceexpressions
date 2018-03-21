@@ -11,13 +11,12 @@ namespace DiceExpressions.Model.Densities
 {
     public static class DensityPlotExtensionMethods
     {
-        public static string Plot<G,M>(this Density<G,M> d, int plotWidth = 70)
+        public static string Plot<G,M>(this IDensity<G,M> d, int plotWidth = 70)
             where G :
-                IBaseStructure<M>,
-                IComparer<M>
+                IBaseStructure<M>
         {
             var pf = Density<G,M>.PField;
-            var maxPercentage = pf.Max(d.Values);
+            var maxPercentage = pf.Max(d.GetValues());
             var asciiPlotter = new AsciiPlotter<M, RealFieldType<PType>, PType>(new RealFieldType<PType>());
             var plotStr = asciiPlotter.GetPlot(
                 k => d[k],
@@ -29,17 +28,16 @@ namespace DiceExpressions.Model.Densities
             return plotStr;
         }
 
-        public static PlotModel OxyPlot<G,M>(this Density<G,M> d, string title = null)
+        public static PlotModel OxyPlot<G,M>(this IDensity<G,M> d, string title = null)
             where G :
                 IBaseStructure<M>,
-                IComparer<M>,
-                IRealEmbedding<M, PType>
+                IRealEmbedding<M>
             where M :
                 struct
         {
             var oxyplotter = new OxyPlotter<G,M,RealFieldType<PType>,PType>(d.BaseStructure, new RealFieldType<PType>());
             var pf = Density<G,M>.PField;
-            title = title ?? d.TrimmedName;
+            title = title ?? d.GetTrimmedName();
             // TODO: For Expected() and Stdev() much more assumptions are necessary!
             // var subtitle = string.Format(
             //     CultureInfo.InvariantCulture,
@@ -58,11 +56,10 @@ namespace DiceExpressions.Model.Densities
             return plotModel;
         }
 
-        public static string GetOxyPlotSvg<G,M>(this Density<G,M> d, string title)
+        public static string GetOxyPlotSvg<G,M>(this IDensity<G,M> d, string title)
             where G :
                 IBaseStructure<M>,
-                IComparer<M>,
-                IRealEmbedding<M, PType>
+                IRealEmbedding<M>
             where M :
                 struct
         {
@@ -72,15 +69,14 @@ namespace DiceExpressions.Model.Densities
             return res;
         }
 
-        public static void SaveOxyPlotPdf<G,M>(this Density<G,M> d, string filename = null)
+        public static void SaveOxyPlotPdf<G,M>(this IDensity<G,M> d, string filename = null)
             where G :
                 IBaseStructure<M>,
-                IComparer<M>,
-                IRealEmbedding<M, PType>
+                IRealEmbedding<M>
             where M :
                 struct
         {
-            filename = filename ?? d.TrimmedName + ".pdf";
+            filename = filename ?? d.GetTrimmedName() + ".pdf";
             var oxyplot = d.OxyPlot(Path.GetFileName(filename));
             using (var stream = File.Create(filename))
             {
